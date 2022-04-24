@@ -1,17 +1,17 @@
 library(deSolve)
 
-#Funci髇 
+#Funci贸n 
 
 sars.epidemic <- function(t, state, parameters) {
   with(as.list(c(state,parameters)), {
     
-    #Variables end骻enas auxiliares 
+    #Variables end贸genas auxiliares 
     Probability.of.Contact.with.Infected.Person<-population.infected.with.SARS/Total.Population
     Susceptible.Contacts<-population.susceptible.to.SARS*Contact.Frequency
     Contacts.between.Infected.and.Uninfected.People<-Susceptible.Contacts*Probability.of.Contact.with.Infected.Person #[personas]
     
     #Variables de flujo
-    Infection.Rate<-Contacts.between.Infected.and.Uninfected.People*Infectivity #[personas por d韆]
+    Infection.Rate<-Contacts.between.Infected.and.Uninfected.People*Infectivity #[personas por d铆a]
     
     #Variables de estado
     dpopulation.susceptible.to.SARS<-(-1)*Infection.Rate # [personas]
@@ -20,10 +20,10 @@ sars.epidemic <- function(t, state, parameters) {
   })
 }
 
-#Par醡etros de simulaci髇 o variables ex骻enas auxiliares
+#Par谩metros de simulaci贸n o variables ex贸genas auxiliares
 
-parameters<-c(Infectivity = 0.1, #sin dimensi髇
-              Contact.Frequency = 2, #personas por d韆
+parameters<-c(Infectivity = 0.1, #sin dimensi贸n
+              Contact.Frequency = 2, #personas por d铆a
               Total.Population = 350 ) #personas
 
 #Condiciones inciales
@@ -33,12 +33,12 @@ InitialConditions <- c(population.susceptible.to.SARS = 349 ,
 
 #Tiempo
 
-tiempo <- seq(0 , 120 ,0.25 ) #inicio del tiempo (d韆s), final del tiempo (d韆s) y lapso temporal de cambio (d韆s)
+tiempo <- seq(0 , 120 ,0.25 ) #inicio del tiempo (d铆as), final del tiempo (d铆as) y lapso temporal de cambio (d铆as)
 
-#M閠odo
+#M茅todo
 intg.method<-c("rk4")
 
-#Impresi髇 del modelo
+#Impresi贸n del modelo
 
 out <- ode(y = InitialConditions,
            times = tiempo,
@@ -46,4 +46,4 @@ out <- ode(y = InitialConditions,
            parms = parameters,
            method =intg.method )
 
-plot(out, col = c("darkgreen"), main = c("Poblaci髇 susceptible al SARS", "Poblaci髇 infectada con SARS"), mfrow = c(1, 2), xlabel="tiempo")
+plot(out, col = c("darkgreen"), main = c("Poblaci贸n susceptible al SARS", "Poblaci贸n infectada con SARS"), mfrow = c(1, 2), xlabel="tiempo")
