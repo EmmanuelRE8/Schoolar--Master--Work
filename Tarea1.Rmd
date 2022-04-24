@@ -1,0 +1,657 @@
+---
+author: "Emmanuel Rueda Escalona A01160141"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<center style="color:black; font-size: 200%">**Tarea 1**</center> 
+
+### Problema 1
+Burbuja especulativa y la crisis inmobiliaria Sub-prime de EE. UU. 2006-2008
+
+**A. Desde la perspectiva del Sistema de la Reserva Federal (SRF) de Estado Unidos.** 
+
+**a.	Cuáles son los objetivos de la SRF**
+
+El Sistema de la Reserva Federal es el banco central de los Estados Unidos. Desempeña cinco funciones generales para promover el funcionamiento eficaz de la economía estadounidense y, en general, el interés público. (FED, 2020) 
+La Reserva Federal:
+
+1) dirige la política monetaria del país para promover el máximo empleo, precios estables y tipos de interés moderados a largo plazo en la economía estadounidense;
+2) promueve la estabilidad del sistema financiero y trata de minimizar y contener los riesgos sistémicos a través de una vigilancia y un compromiso activos en Estados Unidos y en el extranjero;
+3) promueve la seguridad y la solidez de las instituciones financieras individuales y supervisa su impacto en el sistema financiero en su conjunto;
+4) fomenta la seguridad y la eficiencia del sistema de pagos y liquidaciones a través de servicios prestados al sector bancario y al gobierno de Estados Unidos que facilitan las transacciones y los pagos en dólares estadounidenses; y
+5) promueve la protección del consumidor y el desarrollo de la comunidad mediante la supervisión y el examen centrados en el consumidor, la investigación y el análisis de los nuevos problemas y tendencias de los consumidores, las actividades de desarrollo económico de la comunidad y la administración de las leyes y reglamentos sobre el consumidor.
+
+
+**b.	Cuál es la problemática de este tipo de burbujas para la SRF** 
+
+Las burbujas especultivas generan un problema de desestabilización de la economía nacional o internacional. De acuerdo a Dabat (2009), a diferencia de las burbujas especulativas anteriores a 2006, la crisis económica ocasionada por la burbuja especulativa del sector inmobiliario de 2007 no sólo fue el  resultado  de la errónea sobreacumulación de capital en algunos de los sectores, sino  de la creciente  desconexión  entre  la  nueva  economía  financiera, con una gran sobreacumulación  de  capital-dinero  especulativo, y  de  las  dimensiones  de la economía real estadounidense, la demanda social y la inversión productiva. Es decir, la problemátia que representa este tipo de burbujas para la SRF, y para cualquier Banco Central de cualquier país, es que la complejidad del sistema que origina la burbuja, y la distancia de la realidad económica del país, hacen muy dificil detectar el riesgo de una crísis, prevenirla e inclusive responder efectivamente a esta problemática. 
+
+**c.	Describe el problema de esta crisis en específico.**
+
+Específicamente con la burbuja de 2007, no solo fue la apuesta equivocada de capital en el sector hipotecario sino la falta de coincidencia entre un sistema financiero cada vez más complejo y la realidad del sector inmobiliario estadounidenses por los siguientes factores: 
+
+1.	Una excesiva desregulación de los prestamos hipotecarios, para mantener la demanda alta a pesar del incremento de precios de viviendas.
+
+2.	 Desajuste entre activos y pasivos, un desajuste de duración en el que los bancos dependían en gran medida de la financiación a corto plazo y mantenían activos a largo plazo frente a las necesidades de financiación. 
+
+3.	Apalancamiento excesivo, es decir, los inversores habían estado pidiendo prestadas grandes sumas de dinero para invertir en activos, aumentando esencialmente sus apuestas, principalmente en el sector mobiliario. 
+
+4.	Riesgo excesivo de las instituciones financieras. 
+
+5.	Evaluación desajustada respecto al valor real tanto de las viviendas como de los instrumentos financieros en los que se aseguraban los préstamos hipotecarios.
+
+
+**d.	Qué políticas se implementaron por la SRF para intervenir en el mercado para mitigar o evitar los efectos negativos de esta crisis.**  
+
+La SRF realizó las siguientes medidas para responder a la crisis: 
+
+***Repuestas a corto plazo:*** 
+
+Señalización: El tipo de interés de los fondos federales se redujo del 5,25% al 2% y el tipo de descuento bajó del 5,75% al 2,25%,
+
+Expansión de la Balanza de pagos (Flexibilización del crédito): Es decir, aumento la impresión de dinero para respaldar los préstamos hipotecarios y activos hipotecarios. Esto aumentó la presión inflacionaria. 
+
+***Respuesta Financiera. Operaciones e Mercado Abierto:***
+
+Programas de fomento para compra de Valores Respaldados por Hipotecas (MBS)
+
+Préstamos a corto plazo a bancos para generar liquidez y reducción de la tasa de interés de estos préstamos. 
+
+***Cambio en regulaciones. Aumento las regulaciones a los préstamos hipotecarios:***
+
+Cambios en la regulación de verificación de capacidad crediticia 
+
+Cambios en la regulación de límite de créditos acorde a la capacidad económica 
+
+Regulación en la información presentada a los solicitantes de los créditos hipotecarios (información de impuestos, comisiones y pagos mensuales)
+
+
+Regulación contra la coacción de calificadoras, administradores, vendedores, etc. 
+
+***Asistencia a entidades bancarias individuales***
+
+Apoyo en la adquisición de Bear Stean Companies Inc. por JP Morgan Chase & Co.
+
+Apoyos a AIG, Citigroup y Bank of America
+
+Asistencia a otras entidades financieras. 
+
+En un futuro, la SRF deberá regular mejor el otorgamiento de créditos hipotecarios envitando la incertidumbre de la liquidez.  Es necesario que la SRF genere mecanismos de estandarización de los créditos en todas las instituciones bancarias y crediticas así como la regulación de los procedimientos de otorgamiento de estos créditos.
+
+**B.	Lista de Variables**
+
+1.	Créditos hipotecarios otorgados
+2.	Instituciones bancarias
+3.	Instituciones financieras e hipotecarias 
+4.	Precio de las viviendas
+5.	Precio de los sustitutos de la vivienda
+6.	SRF (Tasa de interés,Tasa de Fondo Federal, etc.) 
+7.	Oferta de casas
+8.	Demanda de casas
+9.	Constructoras y agentes inmobiliarios (Vendedores, Valuadores, etc.)
+10.	 Políticas del Gobierno de EE. UU. (Desregulación de los préstamos hipotecarios, Disminución de impuestos a la venta de casas, Mandato de prestamos obligados, etc.)
+
+**C. Desarrolla un diagrama causal que capture los procesos de causalidad circular que consideres son responsables de la burbuja inmobiliaria** 
+
+```{r include=FALSE}
+setwd("~/Clase de modelación de sistemas/Tareas")
+```
+
+<center> ![Diagrama causal de burbuja inmobiliaria](Diagrama burbuja.jpg)</center> 
+
+**D. Usa la descripción de caso y tu propio conocimiento para graficar el comportamiento de algunas de las variables que has identificado (e.g. precio, demanda y oferta). **
+
+install.packages("ggplot2")
+install.packages("hrbrthemes")
+
+```{r include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+```
+
+```{r}
+library(readxl)
+usprice_cust<- read_excel("usprice_cust.xls")
+```
+
+```{r}
+ggplot(usprice_cust, aes(x=Periodo, y=Dólares)) + 
+  geom_line(aes(y = Mediana), color = "darkgreen") + 
+  geom_line(aes(y = Promedio), color="steelblue") +  ggtitle("Mediana y Promedio del Precio de Casas Vendidas en EE. UU.")+scale_x_continuous(breaks=seq(1967,2020,5))+  scale_y_continuous(breaks = seq(0, 500000, 50000)) 
+
+
+```
+
+```{r}
+library(ggplot2)
+Prestamos_sub<- data.frame( Año=c("1996","1997","1998","1999","2000", "2001","2002", "2003","2004","2005","2006","2007","2008") ,  
+  USD_billions=c(70,95,124,125,100,150,200,320,550,650,600,200,50)
+  )
+
+ggplot(Prestamos_sub, aes(x=Año, y=USD_billions)) + 
+  geom_bar(stat = "identity",fill="darkgreen")+labs(title = "Préstamos subprime en dólares por año")+scale_y_continuous(breaks=seq(0,800,100))+geom_line(aes(x = Año, y = USD_billions), size = .8, color="blue", group = 3)
+```
+
+**E. Combina tus respuestas a los incisos anteriores y mapea la estructura de este sistema relevante para el problema que identificaste empleando el diagrama de sistema discutido en clase. Dicho diagrama debe indicar claramente que variables o elementos del sistema se encuentran en la barrera del sistema, qué políticas pueden implementarse para influir en el comportamiento del sistema y qué métricas pueden emplearse para monitorear el desempeño del sistema y la efectividad de las políticas de intervención.**
+
+<center> ![Diagrama causal de burbuja inmobiliaria](Diagrama burbuja con impuesto.jpg)</center> 
+
+La política que se propone, y como han indicado los análisis de la crisis, es restablecer el impuesto a la venta de bienes inmuebles y el aumento de la regulación de los préstamos con el fin de evitar que exista una venta excesiva o sin control. Igualmente mantener un control y regulación de la tasa de Fondo Federal, para evitar la excesiva emisión de prestamos hipotecarios por parte de las entidades financieras. Como se puede ver en el diagrama, estas tres variables (impuesto, regulación y tasa de Fondo Federal) se encuentran en la barrera del sistema (delimitado por la línea punteada) o muy cerca de ella. 
+
+**F. Emplea tu diagrama y responde brevemente a las siguientes preguntas:**
+
+¿Qué factores contribuyeron a la implosión de la burbuja?
+La desregulación del sector, incentivos de la SRF al aumento de la demanda por medio de las tasas de interés, la falta de control en el incremento de los precios en el mediano plazo (a partir del 2001), el aumento desmedido de la demanda debido a la gran cantidad de créditos otorgados.
+
+¿Qué políticas hubiesen prevenido que la burbuja inmobiliaria estallara?
+Una mayor regulación y control en el otorgamiento de crédito. Algún cambio en las tasas del Fondo Federal previo a la crisi.
+
+¿Qué políticas pudieron haber mitigado los efectos negativos de la burbuja en la economía?
+
+Antes de la implosión de la burbuja, un impuesto que balanceara las externaliades positivas de la compra y venta de propiedades.
+
+¿Qué políticas pueden prevenir la generación de una burbuja similar?
+
+Regulación y monitoreo en la compra y ventas de casas así como los prestamos otorgados.
+
+¿Qué tan efectivas han sido las políticas implementadas hasta el día de hoy con respecto de los objetivos que identificaste?
+
+En términos de regulación, tasas de interes y control monetario el SRF ha sido muy cuidadoso, sin embargo, en terminos de regulación bursatil y control de la especulación, sigue faltando medidas más efectivas, prueba de ello fue el caso de la inmobiliaria China, Evergrande y su efecto en el mercado bursatil estadounidense. 
+
+### Problema 2
+
+Emprendedores y Transiciones Tecnológicas 
+
+**2.1 Desarrolla un diagrama causal del caso anterior. Identifica los ciclos de causalidad circular existentes y relevantes. Identifica su polaridad (i.e. positiva, negativa). Nombra estos ciclos de causalidad circular de tal manera que se describa su efecto apropiadamente.**
+
+*DM of self-reinforcing uncertainties*
+
+<center> ![DM of self-reinforcing uncertainties](DM Tech.jpg)</center> 
+
+
+
+*DM of self-reinforcing uncertainties with resource for actions to reduce uncertainty*
+
+<center> ![DM of self-reinforcing uncertainties with resource for actions to reduce uncertainty](DM Tech2.jpg)</center>
+
+
+
+**2.2 Formula una hipótesis dinámica sobre el comportamiento del sistema. Enfócate en el comportamiento de las variables que consideres son más relevantes. Describe gráficamente tu hipótesis dinámica.**
+
+La hipótesis dinámica de este modelo es que el arquetipo de compartamiento del modelo es de crecimiento logístico. Es decir, tiene un ciclo de reforzamiento a partir del recurso de aciones que reducen la incertidumbre y un ciclo de balance que se equilibra en un límite de capacidad de carga.
+
+```{r}
+library(ggplot2)
+data1<- data.frame( Tiempo=c(0,.1,.2,.3,.4,.5,.6,.7,.8,1),  
+  Nueva_Tech=c(0,.1,.2,.4,.6,.8,.9,.96,.98,1)
+  )
+ggplot( data1, aes(x=Tiempo, y=Nueva_Tech)) +
+  geom_smooth(method = "glm", 
+    method.args = list(family = "binomial"), 
+    se = FALSE, color="darkgreen")+
+theme(axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank())
+```
+
+*Se puede apreciar como al inicio hay una fase de reforzamiento hasta llegar al balance en el límite de carga.*
+
+**2.3 Considera la posición de una secretaria de innovación cuyo objetivo es incrementar la tasa de desarrollo de nuevas tecnologías. Emplea el diagrama de sistema discutido en clase para identificar las variables en la barrera del sistema, las métricas para monitorear el cumplimiento de dicho objetivo y las políticas que podrían implementarse para incrementar la tasa de desarrollo de nuevas tecnologías. Describe gráficamente el efecto en el comportamiento del sistema que consideras tendría una de las políticas que identificaste.**
+
+La política propuesta sería establecer un incentivo monetario conjunto, entre la Secretaría y la IP para los emprendedores para que efectivamente completen la fase precomercial, a través de un concurso tipo *shark tank*, esto con el fin incrementar la inversión y desarrollo de nuevas tecnologías.
+La métrica para comprobar el funcionamiento de esta política sería el aumento en la cantidad de empresas por año que invierten en nuevas tecnologías con respecto al año anterior.
+
+
+<center> ![DM of self-reinforcing uncertainties with resource for actions to reduce uncertainty](DM Tech3.jpg)</center>
+
+
+```{r}
+data2<- data.frame( Tiempo=c(0,.1,.2,.3,.4,.5,.6,.7,.8,1),  
+  Nueva_Tech=c(0,.9,.91,.93,.95,.97,.98,.99,1,1)
+  )
+ggplot(data2, aes(x=Tiempo, y=Nueva_Tech)) +
+  geom_smooth(method = "glm", 
+    method.args = list(family = "binomial"), 
+    se = FALSE,linetype="dashed")+
+theme(axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank())
+```
+
+### Problema 3
+
+Políticas de desarrollo urbano 
+
+**3.1 Desarrolla un diagrama causal de este caso **
+
+<center> ![DM of self-reinforcing uncertainties with resource for actions to reduce uncertainty](Casas.jpg)</center>
+
+**3.2 Emplea tu diagrama causal para describir gráficamente tu hipótesis dinámica inicial sobre la dinámica de los precios de las propiedades **
+
+```{r warning=FALSE}
+data3<- data.frame( Tiempo=c(1,2,3,4,5,6,7,8,9,10,11),  
+  Oferta=c(10,8,9,7,8,6,7,6,5,6,5),
+ Demanda=c(8,2,10,3,9,5,8,5,6,5,6))
+ggplot(data3, aes(x=Tiempo, y=Oferta, z=Demanda),colour=variable) +
+geom_smooth(data=data3,method = "loess", span = 0.3, se = FALSE, colour="darkgreen")+
+ geom_smooth( mapping=aes(x=Tiempo, y=Demanda),method = "loess", span = 0.3, se = FALSE, colour="blue")+ 
+theme(axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank())+
+  labs(title = "Relación precio-tiempo",y="Precios ($)",x="Tiempo (t)")+
+scale_colour_manual("", breaks = c("y1", "y2"), values = c("darkgreen", "blue"))
+```
+
+Como se aprecia la demanda (azul) es muy sensible al movimiento del precio, si hay sobreoferta, en el corto plazo los precios bajan haciendo que la demanda suba y se inicien nuevos proyectos, lo que hace que se recupera la oferta (verde), pero con oscilaciones por el delay. La hipótesis propuesta es que el modelo tiene un arquetipo de comportamiento de escalamiento entre rivales (a la inversa). 
+
+**3.3 ¿Qué tipo de política podría seguir una compañía constructora inteligente? Emplea el diagrama de sistema visto en clase (i.e. políticas, factores exógenos, diagrama causal y métricas de comportamiento) para describir el funcionamiento de dicha política y su efecto en el sistema. Grafica el comportamiento esperado de dicha política y contrástala brevemente con tu hipótesis dinámica inicial, gráfico contrastando el comportamiento de la política y la hipótesis dinámica).**
+
+La política que la constructora pordía seguir es buscar capital por otro medio, a través de préstamos o fondos de inversión, para aumentar el número de construcciones independientemente de la demanda, esto para evitar que los delays y asegurar un precio bajo, una demanda alta y un flujo constante del ciclo de refuerzo. 
+La métrica para poder comprobar el funcionamiento de esta política sería el precio a corto plazo.
+
+<center> ![DM of self-reinforcing uncertainties with resource for actions to reduce uncertainty](Casas2.jpg)</center>
+
+
+```{r}
+data4<- data.frame( Tiempo=c(1,2,3,4,5,6,7,8,9,10),  
+  Oferta=c(.9,.8,.7,.6,.59,.55,.54,.53,.52,.51),
+ Demanda=c(.1,.2,.3,.4,.44,.45,.46,.47,.48,.49))
+ggplot(data4, aes(x=Tiempo, y=Oferta, z=Demanda),colour=variable) +
+geom_smooth(data=data4,method = "loess", se = FALSE, colour="darkgreen")+
+ geom_smooth( mapping=aes(x=Tiempo, y=Demanda),method = "loess",  se = FALSE, colour="blue")+ 
+theme(axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank())+
+  labs(title = "Relación precio-tiempo",y="Precios ($)",x="Tiempo (t)")
+```
+
+Ahora se puede observar que en el nuevo gráfico, la idea de la política es eliminar las oscilaciones de precio debido a la sobredemanda y llevar la oferta y demanda a un precio óptimo estable en el largo plazo.Esto sería llevar la dinamica a un arquetipo de comportamiento de "éxito para los exitosos"
+
+### Problema 4 
+
+Modelación de la epidemia SARS
+
+**4.1 Incluye tu modelo en la entrega final de la tarea, nombra tu modelo de la siguiente manera: Tunombre_sars_model.R. Toma en cuenta que el modelo que envíes será revisado en términos de la sintaxis del código, pero fundamentalmente en términos de su funcionalidad. Un modelo que no funcione al ser ejecutado será penalizado notablemente**
+
+install.packages("deSolve")
+
+**Emmanuel_sars_model.R** (el modelo tmb se envío aparte)
+```{r message=FALSE, warning=FALSE}
+library(deSolve)
+
+#Función 
+
+sars.epidemic <- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+    
+    #Variables endógenas auxiliares 
+    Probability.of.Contact.with.Infected.Person<-population.infected.with.SARS/Total.Population
+    Susceptible.Contacts<-population.susceptible.to.SARS*Contact.Frequency
+    Contacts.between.Infected.and.Uninfected.People<-Susceptible.Contacts*Probability.of.Contact.with.Infected.Person #[personas]
+    
+    #Variables de flujo
+    Infection.Rate<-Contacts.between.Infected.and.Uninfected.People*Infectivity #[personas por día]
+    
+    #Variables de estado
+    dpopulation.susceptible.to.SARS<-(-1)*Infection.Rate # [personas]
+    dpopulation.infected.with.SARS<-Infection.Rate # [personas]
+    list(c(dpopulation.susceptible.to.SARS, dpopulation.infected.with.SARS))
+  })
+}
+
+#Parámetros de simulación o variables exógenas auxiliares
+
+parameters<-c(Infectivity = 0.1, #sin dimensión
+              Contact.Frequency = 2, #personas por día
+              Total.Population = 350 ) #personas
+
+#Condiciones inciales
+
+InitialConditions <- c(population.susceptible.to.SARS = 349 , 
+                       population.infected.with.SARS = 1) 
+
+#Tiempo
+
+tiempo <- seq(0 , 120 ,0.25 ) #inicio del tiempo (días), final del tiempo (días) y lapso temporal de cambio (días)
+
+#Método
+intg.method<-c("rk4")
+
+#Impresión del modelo
+
+out <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic,
+           parms = parameters,
+           method =intg.method )
+
+plot(out, col = c("darkgreen"), main = c("Población susceptible al SARS", "Población infectada con SARS"), mfrow = c(1, 2), xlabel="tiempo")
+
+```
+
+**4.2 ¿Qué sucede cuando inicializas la variable de estado “Population Infected with SARS” en cero? Explica brevemente que origina el comportamiento que observas, emplea la estructura del modelo para cimentar tu argumentación.**
+
+```{r message=FALSE, warning=FALSE}
+InitialConditions2 <- c(population.susceptible.to.SARS = 350 ,
+                       population.infected.with.SARS = 0)
+
+out2 <- ode(y = InitialConditions2,
+           times = tiempo,
+           func = sars.epidemic,
+           parms = parameters,
+           method =intg.method )
+
+plot(out2, col = c("blue"), main = c("Población suceptible al SARS", "Población infectada con SARS"), mfrow = c(1, 2), xlabel="Tiempo")
+
+```
+
+De acuerdo a la gráfica, como no hay población infectada con SARS es imposible que exista riesgo de contagio en la población, por lo tanto ambas gráficas se comportan de forma lineal, sin cambio en el tiempo.
+
+**4.3 ¿Cómo cambia la dinámica de comportamiento del modelo si inicializas esta variable de estado a un valor positivo diferente de cero?**
+
+```{r message=FALSE, warning=FALSE}
+InitialConditions3 <- c(population.susceptible.to.SARS = 2000 ,
+                       population.infected.with.SARS = 10)
+
+out3 <- ode(y = InitialConditions3,
+           times = tiempo,
+           func = sars.epidemic,
+           parms = parameters,
+           method =intg.method )
+
+plot(out3, col = c("red"), main = c("Población suceptible al SARS", "Población infectada con SARS"), mfrow = c(1, 2), xlabel="Tiempo")
+
+```
+
+Despúes de realizar varios experimentos, la gráfica tiene un comportamiento logístico, es decir de un comportamiento arquetípico logísitco, que tiende a estabilizarse o al balance tras la infección de toda la población susceptible. Es decir, la inmunidad de rebaño. Si las variables iniciales, población suceptible baja o la variable infectada sube, se llegará al balance antes (en el tiempo) y viceversa.
+
+**4.4 ¿Cómo cambia la dinámica del sistema si aumenta el valor del parámetro “Contact Frequency”? ¿El valor de este parámetro modifica el valor final de la variable de estado “Population Infected with SARS”? Explica porque sí o porque no haciendo referencia a la estructura del modelo y a los resultados de la simulación. **
+
+```{r message=FALSE, warning=FALSE}
+parameters4<-c(Infectivity = 0.1, # sin dimensión
+              Contact.Frequency = 20, # personas por día
+              Total.Population = 350 ) #personas
+
+InitialConditions <- c(population.susceptible.to.SARS = 349 ,
+                       population.infected.with.SARS = 1)
+
+out4 <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic,
+           parms = parameters4,
+           method =intg.method )
+
+plot(out4, col = c("darkorange"), main = c("Población suceptible al SARS", "Población infectada con SARS"), mfrow = c(1, 2), xlabel="Tiempo")
+
+```
+
+Se llega al balance donde todos se infectan antes (en el tiempo).Debido a que la Tasa de infección está en función de los contactos entre no infectados e infectados y estos a su vez están en función de los contactos susceptibles, que  tmambién dependen directamente de la frecuencia de contacto. Esto vuelve a las variables muy sensibles al cambio del valor del parámetro "Contact Frencuency".
+
+**4.5 ¿Cómo cambia el comportamiento del modelo si la variable de flujo “Infection Rate” cambia? Sigue los siguientes lineamientos para dar tu respuesta: Responde a esta pregunta describiendo brevemente los cambios que identificas al cambiar el valor de esta variable. Emplea un par de gráficos de comportamiento del modelo para dar soporte a tu respuesta **
+
+```{r message=FALSE, warning=FALSE}
+parameters5<-c(Infectivity = 0.015, # sin dimensión
+              Contact.Frequency = 10, # personas por día
+              Total.Population = 350 ) #personas
+
+InitialConditions <- c(population.susceptible.to.SARS = 349 ,
+                       population.infected.with.SARS = 1)
+
+out5 <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic,
+           parms = parameters5,
+           method =intg.method )
+plot(out5, col = c("purple"), main = c("Población suceptible al SARS", "Población infectada con SARS"), mfrow = c(1, 2), xlabel="Tiempo")
+```
+
+```{r message=FALSE, warning=FALSE}
+parameters6<-c(Infectivity = 0.2, # sin dimensión
+              Contact.Frequency = 10, # personas por día
+              Total.Population = 350 ) #personas
+
+InitialConditions <- c(population.susceptible.to.SARS = 349 ,
+                       population.infected.with.SARS = 1)
+
+out6 <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic,
+           parms = parameters6,
+           method =intg.method )
+plot(out6, col = c("brown"), main = c("Población suceptible al SARS", "Población infectada con SARS"), mfrow = c(1, 2), xlabel="Tiempo")
+```
+
+Los parámetros Infectivity y Contact Frequency se encuentran en función de la variable de Infection rate, Contact Frecquency es más sensible a los cambios de la variable, ya que entre menor sea, el balance tope de la población infectada tarda  mayor tiempo en alcanzarse.
+
+**4.6 El modelo que has desarrollado siguiendo el tutorial anterior es demasiado simple. Brevemente critica la formulación y estructura del modelo y lista las suposiciones del modelo que consideras son irrealistas. Uno o dos párrafos son más que suficientes para responder este punto **
+
+Aunque es un modelo funcional, su simplicidad omite una gran cantidad de factores que existen en la vida real, tales como: edad de la población susceptible, respuesta de la población (cuarentenas, vacunas, etc.), variantes y reinfecciones. 
+
+A mi parecer, entre las suposiciones menos realistas estan: la tasa de infectividad tan alta y constante, la  población fija y generalizada y la falta de reductores o reforzadores de tasa poblacional infectada (evolución de anticuerpos, vacunas, variantes).
+
+**4.7 ¿De qué manera cambia el comportamiento de la epidemia una vez que agregas estas nuevas variables al modelo? **
+
+```{r message=FALSE, warning=FALSE}
+library("deSolve")
+
+sars.epidemic2 <- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+    #Variables endógenas auxiliares 
+    Probability.of.Contact.with.Infected.Person<-population.infected.with.SARS/Total.Population
+    Susceptible.Contacts<-population.susceptible.to.SARS*Contact.Frequency
+    Contacts.between.Infected.and.Uninfected.People<-Susceptible.Contacts*Probability.of.Contact.with.Infected.Person #[personas]
+    #Variables de flujo
+    Infection.Rate<-Contacts.between.Infected.and.Uninfected.People*Infectivity #[personas por día]
+    Recovery.Rate<-population.infected.with.SARS/Average.Duration.Of.Infectivity
+    #Variables de Estado
+    dpopulation.susceptible.to.SARS<-(-1)*Infection.Rate # [personas]
+    dpopulation.infected.with.SARS<-Infection.Rate-Recovery.Rate # [personas]
+    dpopulation.recovered.from.SARS<-Recovery.Rate # [personas]
+    list(c(dpopulation.susceptible.to.SARS, dpopulation.infected.with.SARS, dpopulation.recovered.from.SARS))
+  })
+}
+
+parameters7<-c(Infectivity = 0.1, # sin dimensión
+              Contact.Frequency = 2, # personas por día
+              Total.Population = 350, #personas
+              Average.Duration.Of.Infectivity = 12) #días
+
+InitialConditions <- c(population.susceptible.to.SARS = 349 ,
+                       population.infected.with.SARS = 2 ,
+                       population.recovered.from.SARS = 1)
+
+tiempo <- seq(0 , #día inicial
+             120 , #día final
+             0.25 ) #temporalidad de cambio en días
+
+intg.method<-c("rk4")
+
+out7 <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic2,
+           parms = parameters7,
+           method =intg.method )
+
+plot(out7, col = c("darkgreen"), main = c("Población suceptible al SARS", "Población infectada con SAR", "Población recuperada del SARS"), mfrow = c(1, 2), xlabel= "Tiempo")
+
+```
+
+El cambio se percibe en la población infectada con SARS, al incluir una variable de flujo que contraresta el efecto de la variable de flujo inicial, el comportamiento de la variable de estado de la población infectada tiende a crecer hasta alcanzar su máximo y luego empezar a decrecer, esto en función de las tasas de infección y recuperación.
+
+
+**4.8 ¿Describe gráficamente y con un breve texto el efecto en el sistema de cambios (i.e. incremento y decremento) de las siguientes variables: “contact frequency” y “infectivity”? Enfatiza en las diferencias que percibes con respecto del compartamiento del modelo base. Sé conciso y breve en tu descripción textual y gráfica **
+
+```{r message=FALSE, warning=FALSE}
+parameters8<-c(Infectivity = 0.15, # sin dimensiones
+              Contact.Frequency = 5, # personas por días
+              Total.Population = 350, # personas
+              Average.Duration.Of.Infectivity = 12) #días
+
+parameters9<-c(Infectivity = 0.05, # sin dimensiones
+              Contact.Frequency = 10, # personas por días
+              Total.Population = 350, #personas
+              Average.Duration.Of.Infectivity = 12) #días
+
+parameters10<-c(Infectivity = 0.1, # sin dimensiones
+              Contact.Frequency = 15, # personas por día
+              Total.Population = 350, #personas
+              Average.Duration.Of.Infectivity = 12) #días
+
+out5 <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic2,
+           parms = parameters8,
+           method =intg.method )
+
+out6 <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic2,
+           parms = parameters9,
+           method =intg.method )
+
+out7 <- ode(y = InitialConditions,
+           times = tiempo,
+           func = sars.epidemic2,
+           parms = parameters10,
+           method =intg.method )
+
+plot(out5, out6, out7, col = c("blue", "red", "darkgreen"), main = c("Población suceptible al SARS", "Población infectada con SAR", "Población recuperada del SARS"), mfrow = c(1, 3), xlabel="Tiempo")
+
+```
+
+La principal variación se presenta cuando se incrementan los parámetros de Infectivity y Contact Frequency. Esto se puede observar en la población infectada con SARS, debido a que a mayores sean los parámetros, la gráfica llega a su tope de balance al considerar que el total de la población está infectado. 
+
+El cambio más evidente con respecto al modelo base está en la gráfica de población infectada con SARS, se puede observar el cambio de comportamiento, ya que en este nuevo modelo alcanza un pico y decrece, y en el modelo anterior no decrecía nunca a falta de una variable de flujo que contrarestara la tasa de infección.
+
+### Problema 5
+
+Crecimiento y Colapso
+
+**5.1 Construye un modelo de dinámica de sistemas de este caso de estudio. Nota, las variables del modelo se indican en itálicas. Emplea esta ayuda para construir tu modelo (30 puntos, productos: modelo en R, manda tu modelo con la versión final de tu tarea, emplea el siguiente formato para nombrar tu modelo: TuNombre_crecimiento_colapso.R)**
+
+```{r}
+library("deSolve")
+
+parameters11<-c(normal.birth.rate = 0.0035, #sin dimensiones
+              regeneration.rate = 1.2, #sin dimensiones
+              carrying.capacity = 7500000, #unidades del recurso
+              min.regeneration.rate = 0.01, #sin dimensión
+              rapid.resource.depletion.time = 1, #año
+              renewable.resource.consumption.per.capita = 1 #unidades de recurso por persona
+              ) 
+
+InitialConditions11 <- c(population = 1000000 ,
+                       renewable.resources = 5000000)
+
+overshoot.and.collapse <- function(t, state, parameters11) {
+  with(as.list(c(state,parameters11)), {
+    
+    #Variables endógenas auxiliares
+    per.capita.renewable.resource.availability<-renewable.resources/population
+    normal.lifetime<-max(15, min(100,66)) #66 es el promedio de vida propuesto.
+    resource.availability.dependent.lifetime<-normal.lifetime*per.capita.renewable.resource.availability
+    resource.dependent.regeneration<-regeneration.rate*renewable.resources*(renewable.resources/carrying.capacity)*(1-renewable.resources/carrying.capacity)
+    min.regeneration<-carrying.capacity*min.regeneration.rate
+    
+    #Variable de flujo
+    births.flow<-population*per.capita.renewable.resource.availability*normal.birth.rate
+    deaths.flow<-population/resource.availability.dependent.lifetime
+    regeneration<-min.regeneration+resource.dependent.regeneration
+    resource.use<-min(renewable.resources/rapid.resource.depletion.time, renewable.resource.consumption.per.capita*population)
+    
+    #State (stock) variables
+   dpopulation<-births.flow-deaths.flow
+   drenewable.resources<-regeneration-resource.use
+    list(c(dpopulation, drenewable.resources))
+  })
+}
+
+times <- seq(0 , #inicial time #years
+             100 , #end time #years
+             0.25 ) #time step #years
+
+intg.method<-c("rk4")
+
+out <- ode(y = InitialConditions11,
+           times = times,
+           func = overshoot.and.collapse,
+           parms = parameters11,
+           method =intg.method )
+
+plot(out, col = c("darkgreen"), main = c("Población", "Recurso Renovables"),xlab="Tiempo transcurrido (años)",ylab=c("Personas", "Unidades de recursos renovables"), mfrow = c(1, 2))
+
+```
+
+Se adjunta el archivo del modelo en R también. 
+
+**5.2 ¿Describe textualmente tu hipótesis dinámica? **
+
+Como el título del problema lo sugiere, este modelo tiene un arquetipo de comportamiento de Crecimiento exponencial y colapso. Esto quiere decir que la interacción entre las variables de estado, Población y Recursos Renovables, con las cuatro variables de flujo, nacimientos, muertes, regeneración y uso de recursos, muestra que las primeras tienen un comportamiento de refuerzo exponecial, al ir incrementándose la población y llegar al máximo uso de los recursos renovables. Después se puede ver como los recursos empiezan a escasear, de acuerdo a la relación de u los factores endógenos “per.capita.renewable.resource.availability” y eventualmente empieza el colapso del sistemo, que se representa con el incremento en la tasa de muerte en la población a partir de la falta de recursos.
+
+
+**5.3 Emplea tu modelo para mostrar la dinámica de comportamiento del modelo cuando la variable “minimum regeneration rate” es igual a 10% por año **
+
+```{r}
+library("deSolve")
+
+parameters12<-c(normal.birth.rate = 0.0035, #sin dimensión
+              regeneration.rate = 1.2, # sin dimensión
+              carrying.capacity = 7500000, #unidades
+              min.regeneration.rate = 0.1, #sin dimensión
+              rapid.resource.depletion.time = 1, #año
+              renewable.resource.consumption.per.capita = 1 #unidades por persona por año
+             ) 
+
+InitialConditions12 <- c(population = 1000000 ,
+                       renewable.resources = 5000000)
+
+overshoot.and.collapse <- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+    
+    #Variables endógenas auxiliares
+    
+    per.capita.renewable.resource.availability<-renewable.resources/population
+    normal.lifetime<-max(15, min(100,66)) #promedio de vida
+    resource.availability.dependent.lifetime<-normal.lifetime*per.capita.renewable.resource.availability
+    resource.dependent.regeneration<-regeneration.rate*renewable.resources*(renewable.resources/carrying.capacity)*(1-renewable.resources/carrying.capacity)
+    min.regeneration<-carrying.capacity*min.regeneration.rate
+    
+    #Variables de flujo
+    
+    births.flow<-population*per.capita.renewable.resource.availability*normal.birth.rate
+    deaths.flow<-population/resource.availability.dependent.lifetime
+    regeneration<-min.regeneration+resource.dependent.regeneration
+    resource.use<-min(renewable.resources/rapid.resource.depletion.time, renewable.resource.consumption.per.capita*population)
+    
+    #Variables de Estado
+   dpopulation<-births.flow-deaths.flow
+   drenewable.resources<-regeneration-resource.use
+    list(c(dpopulation, drenewable.resources))
+  })
+}
+
+tiempo <- seq(0 , #año inicial
+             145 , #año final
+             0.25 ) #temporalidad de cambio
+
+intg.method<-c("rk4")
+
+out12 <- ode(y = InitialConditions12,
+           times = tiempo,
+           func = overshoot.and.collapse,
+           parms = parameters12,
+           method =intg.method )
+
+plot(out12, col = c("red"), main = c("Población II", "Recursos Renovables II"),xlab="Tiempo transcurrido (años)",ylab=c("Personas", "Unidades de recursos renovables"), mfrow = c(1, 2))
+
+```
+
+La variable min.regeneration.rate afecta a la variable “min.regeneration”, por lo que un incremento en 10% causa que la regeneración se incremente provocando  que el comportamiento de ambas variables de estado presente un cambio hacia el alentar su crecimiento (tarda más tiempo) y hacerlo mayor.

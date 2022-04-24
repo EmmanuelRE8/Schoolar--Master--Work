@@ -1,0 +1,544 @@
+---
+title: "Tarea 2"
+author: "Emmanuel Rueda Escalona"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problema 1: Preguntas de Opción Múltiple (120 puntos)
+
+### Capítulo 3
+
+Q1: How many feedback loops (of each kind) are there in the SFD on the right? Hint: draw the CLD.
+
+**R: D.none of the previous answers is correct**
+
+Q2: Consider the SFD of the population submodel of a model related to prostitution and human trafficking displayed above. Which of the following CLDs is the best aggregated CLD corresponding to this submodel?
+
+**R: B**
+
+Q3: Which of the following CLDs corresponds best to the SFD displayed above?
+
+**R: C**
+
+Q4: The unit of time in a model concerning the large-scale introduction of electrical vehicles (EVs) is expressed in month. The production capacity of a company that produces EVs is modeled as a stock variable with units expressed in EV=month. The enormous growth of the expected demand for new EVs leads to an increase of the production capacity of EVs. What unit needs to be used for this increase of the production capacity?
+
+**R: D.$\frac{EV}{month^2}$ **
+
+Q5: Consider the CLD (without loop polarities and link polarities) on the right. Which of the SFDs displayed below is compatible with this CLD?
+
+**R: C**
+
+Q6: How many feedback loops (of each kind) are there in the SFD on the right? Hint: draw the CLD.
+
+**R: D. None of the previous answers is correct**
+
+Q7: How many feedback loops (of each kind) are there in SFD on the right? Hint: draw the CLD.
+
+**R: B. 2 feedback loops **
+
+Q8: How many feedback loops are there in the SFD on the right? Hint: draw the CLD.
+
+**R: A. 6 feedback loops** 
+
+Q9:How many feedback loops are there in the SFD displayed above?
+
+**R: B. 6 feedback loops**
+
+Q10.
+
+**R: A. Success to the successful**
+
+Q11.
+
+**R: B. 100% in micro-CHP: the surface of the area to the right of the intersection point is much larger than the surface of the area to the left**
+
+Q12.
+
+**R: C.**
+
+Q13: Suppose there is a positive causal link from variable x to variable y, i.e. x (→+) y. Someone tells you that y increases when x increases, but also when x decreases. Which of the following statements is true?
+
+**R: C. x must be a flow variable.**
+
+Q14: The stock exchanges of Amsterdam, Brussels and Paris announced in the year 2000 that they would merge into Euronext. In 2007, Euronext merged with the New York Stock Exchange. The graph on the left shows what happened in the meantime in terms of the annual number of IPOs and annual cancelations of stock market listings in Amsterdam, also called the Damrak. Which of the following statements is correct?
+
+**R: A.In 2000 there were more companies listed on the Damrak than in subsequent years.**
+
+
+Q16: Suppose that variable k is not important. Which of the following (incomplete) CLDs is the most appropriate highly aggregated CLD corresponding to the SFD above?
+
+**R: C.**
+
+Q19: How many feedback loops are there in the stock-flow diagram displayed above?
+
+**R: D. None of the previous answers is correct**
+
+
+### Capítulo 7
+
+Q1: The equation for the CLD on the right –with p(t) = size of the rat population, g the annual number of births per rat, and s the annual number of deaths per rat– is:
+
+**R: D. $\frac{dp(t)}{dt}$ = gp(t) − sp(t)**
+
+Q2: Consider the SD model displayed on the right, with c > 0, d > 0, A0 > 0, en B0 > 0. The formula of the flow variable is equal to c:d:A:B=(A + B). Which behavior corresponds to (stock) variable B? 
+
+**R: C.**
+
+Q3: Which of the following systems of differential equations is best suited for studying the sustainability of the security systems? [death rate of the Retired = m; birth rate per adult = b; average residence time in group K = t1 and in group A = t2].
+ 
+**R: D.**
+
+Q6: The green curve in the left hand side graph is the only inflow ‘in’ into a stock variable, and the red line is the only outflow ‘uit’ out of the same stock variable. Which of the behaviors in the right hand side graph corresponds, given the ‘in’ and ‘uit’ flows, with the behavior of the stock variable?
+
+**R: D. curve 4 (light blue)**
+
+Q8: The left hand side graph in the above figure shows the behavior of two out of three flows of the stock-flow diagram displayed on the right. The third flow is proportional to the Stock. Which of the following figures displays possible behaviors for the Stock and outflow1 that could have been generated with the above structure?
+
+**R: A.**
+
+Q11: The green line in the graph on the left is the only inflow ‘in’ into a stock variable. The blue line with the positive slope is the only outflow ‘uit’ out of this same stock variable. Which of the patterns of behavior on the right could, given the ‘in’ and ‘uit’ flows, correspond to the stock variable?
+
+**R: C. pattern 3 (orange)**
+
+Q12: The SD model below could be used to calculate demographic scenarios. Suppose one uses the model to project the expected demographic developments in Germany starting from following assumptions about the flow variables (see also the graph below): The net immigration decreases from 300000 in 2000 to 0 in 2008 and remains constant at that level until the year 2025 after which an annual amount of immigrants equal to 500000 are admitted. The birth rate decreases linearly from 0.0083 in 2000 to 0.0075 in 2050. The death rate increases linearly from 0.01 in 2000 to 0.02 in 2050.
+Given these assumptions and the model displayed above, what would be the expected evolution of the stock variable ‘Inhabitants’?
+
+**R: A.**
+
+Q14: Pattern 1 in the graph on the left shows the only inflow ‘in’ into a stock variable and pattern 2 its only outflow ‘out’. Which pattern of behavior on the right belongs to the stock variable?
+
+**R: B pattern 2 (red)**
+
+## Problema 2: Política de Crimen y Planificación Familiar (90 puntos)
+
+2.1 Construye un modelo de dinámica de sistemas de este caso de estudio. Corre el caso base por un período de 50 años. Nota, las variables del modelo se indican en itálicas. Emplea esta ayuda para construir tu modelo (30 puntos, productos: modelo en R, envía tu modelo con la versión final de tu tarea)
+
+```{r}
+library("deSolve")
+
+crimes.and.family <- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+     
+    #Vairables Auxiliares Endógenas
+     criminal.kids<-kids*percentage.of.kids.with.criminal.behavior
+     criminal.youngsters<-youngsters*percentage.of.youngsters.with.criminal.behavior
+     criminal.adults<-adults*percentage.of.adults.with.criminal.behavior
+     criminal.retirees<-retirees*percentage.of.retirees.with.criminal.behavior
+     crimes<-crime.by.others + criminal.kids*criminal.acts.per.criminal.kid + criminal.youngsters*criminal.acts.per.criminal.youngster + criminal.adults*criminal.acts.per.criminal.adult + criminal.retirees*criminal.acts.per.criminal.retiree
+     
+     #Vairables de flujo
+     deaths<-retirees/average.time.as.retiree
+     adults.to.retirees<-adults/average.time.as.adult
+     youngsters.to.adults<-youngsters/average.time.as.youngster
+     kids.to.youngsters<-kids/average.time.as.kid
+     births<-successful.voluntary.family.planning.measures*(adults*fertility.rate.of.adults + youngsters*fertility.rate.of.youngsters)
+     
+     #Variables de Estado
+     dkids<-births-kids.to.youngsters
+     dyoungsters<-kids.to.youngsters-youngsters.to.adults
+     dadults<-youngsters.to.adults-adults.to.retirees
+     dretirees<-adults.to.retirees-deaths
+     list(c(dkids,dyoungsters,dadults,dretirees),
+          crimes=crimes)
+  })
+}
+
+    parameters<-c(successful.voluntary.family.planning.measures= 1, # 1 no existe planificación familiar y 0 es donde las parejas dejan de tener hijos
+                  fertility.rate.of.adults=.03, #sin dimensión
+                  fertility.rate.of.youngsters=.003, #sin dimensión
+                  crime.by.others=6000000, #crimenes por año
+                  criminal.acts.per.criminal.kid= 2,   #crimenes por año
+                  criminal.acts.per.criminal.youngster= 4, #crimenes por año
+                  criminal.acts.per.criminal.adult= 12, #crimenes por año
+                  criminal.acts.per.criminal.retiree= 4, #crimenes por año
+                  average.time.as.retiree= 15, #años
+                  average.time.as.adult= 40, #años
+                  average.time.as.youngster= 12, #años
+                  average.time.as.kid= 12, #añoss
+                  percentage.of.kids.with.criminal.behavior= .05, 
+                  percentage.of.youngsters.with.criminal.behavior= .5,
+                  percentage.of.adults.with.criminal.behavior= .6,
+                  percentage.of.retirees.with.criminal.behavior= .1
+                )
+                InitialConditions1 <- c(kids= 1000000,   #personas
+                                      youngsters= 1000000, #personas
+                                      adults= 3000000, #personas
+                                      retirees= 750000) #personas
+  
+                ini.time<-0 #años
+                end.time<-50 # años
+                time.step<-1 # años
+                tiempo <- seq(ini.time,
+                            end.time,
+                            time.step)
+  
+                intg.method<-c("rk4")
+                out <- ode(y = InitialConditions1,
+                           times = tiempo,
+                           func = crimes.and.family,
+                           parms = parameters,
+                           method =intg.method )
+                plot(out, xlab = "años", ylab =c("personas"), col = c("darkgreen"))
+```
+
+2.2 Ahora asume que debido al éxito de la planificación familiar (successful voluntary family planning measures) la variable birth flow es 75% menor, eso es: 25% de la suma de las variables adultsanual fertility rate of adults y youngters + youngters*anual fertility rate of youngters. Expande tu modelo y grafica los nuevos resultados (30 puntos, productos: modelo en R, envía tu modelo con la versión final de tu tarea)
+
+```{r}
+
+    parameters2<-c(successful.voluntary.family.planning.measures=.25, 
+                  fertility.rate.of.adults=.03, 
+                  fertility.rate.of.youngsters=.003, 
+                  crime.by.others=6000000, #crimenes por año
+                  criminal.acts.per.criminal.kid= 2,   #crimenes por año
+                  criminal.acts.per.criminal.youngster= 4, #crimenes por año
+                  criminal.acts.per.criminal.adult= 12, #crimenes por año
+                  criminal.acts.per.criminal.retiree= 4, #crimenes por año
+                  average.time.as.retiree= 15, #años
+                  average.time.as.adult= 40, #años
+                  average.time.as.youngster= 12, #años
+                  average.time.as.kid= 12, #años
+                  percentage.of.kids.with.criminal.behavior= .05, 
+                  percentage.of.youngsters.with.criminal.behavior= .5,
+                  percentage.of.adults.with.criminal.behavior= .6,
+                  percentage.of.retirees.with.criminal.behavior= .1
+                )
+                InitialConditions2 <- c(kids= 1000000,   #personas
+                                      youngsters= 1000000, #personas
+                                      adults= 3000000, #personas
+                                      retirees= 750000) #personas
+  
+                ini.time<-0 #años
+                end.time<-50 #años
+                time.step<-1 #años
+                times <- seq(ini.time,
+                            end.time,
+                            time.step)
+  
+                intg.method<-c("rk4")
+                out2 <- ode(y = InitialConditions2,
+                           times = times,
+                           func = crimes.and.family,
+                           parms = parameters2,
+                           method =intg.method )
+                           plot(out2, xlab = "años", ylab =c("personas"), col = c("darkred"))
+```
+
+2.3 Compara el comportamiento de esta modificación con respecto del caso base ¿Qué diferencias encuentras?, explica por qué estas diferencias son relevantes en este sistema (30, gráficos comparando el comportamiento de los dos modelos de manera simultánea, explicación de comportamiento)
+
+```{r}
+
+plot(out, out2, col = c("darkgreen", "darkred"))
+```
+
+Como podemos observar en la gráfica, la linea roja punteada es la población con la medida de planificación familiar (la que redujo en un 75% el nacimiento de nuevos niños). Esta medida generó que el comportamiento inicial del modelo, donde la población crecía en sus cuatro sectores de edad, ahora se viera disminuida drásticamente. La variable de estado “kids” fue la que se dismiyó y las demás variables de estado siguiero este comportamiento ya que dependen directa o indirectamente de ésta.
+
+## Problema 3: Administración de Cadena de Suministro (180 puntos)
+
+3.1 Construye un modelo de dinámica de sistemas basado en el caso anterior, simula el modelo por un período de 100 meses. Asegúrate que el modelo este en equilibrio (30 puntos, productos: modelo en R, envía tu modelo con la versión final de tu tarea)
+
+```{r}
+library("deSolve")
+
+sports.cars <- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+     
+    #Variable endógena auxiliar 
+     target.inventory<-sales*inventory.coverage
+     inventory.correction<-(target.inventory-inventory)/time.to.correct.inventory
+     target.production<-sales+inventory.correction
+     target.workforce<-target.production/productivity.of.average.worker
+     
+     #Variable de Flujo
+     production<-workforce*productivity.of.average.worker
+     net.hire.rate<-(target.workforce-workforce)/time.to.adjust.workforce
+     
+     #Variable de Estado
+      dinventory<-production-sales
+      dworkforce<-net.hire.rate
+     list(c(dinventory,dworkforce))
+  })
+}
+
+    parameters3<-c(sales=100, #coches por mes
+                  productivity.of.average.worker= 1, #coches por mes por persona
+                  inventory.coverage= 3, #meses
+                  time.to.correct.inventory= 2, #meses
+                  time.to.adjust.workforce= 10 #meses
+                )
+                InitialConditions3 <- c(inventory= 300, #coches
+                                       workforce= 100) #personas
+  
+                ini.time<-0 #meses
+                end.time<-100 #meses
+                time.step<-1 #meses
+                times3 <- seq(ini.time,
+                            end.time,
+                            time.step)
+  
+                intg.method<-c("rk4")
+                out <- ode(y = InitialConditions3,
+                           times = times3,
+                           func = sports.cars,
+                           parms = parameters3,
+                           method =intg.method )
+                           plot(out,
+                                xlab = "meses",
+                                ylab =c(""), col=c("darkorange"))
+```
+
+3.2 Ahora corre el modelo haciendo que la variable ‘sales’ cambie de 100 cars per month a 150 cars per month. Muestra y describe el comportamiento del modelo para las siguientes variables: sales, inventory y workforce (30 puntos, productos: gráficos describiendo el comportamiento del sistema, comentarios que describan el comportamiento del sistema)
+
+```{r}
+
+    parameters4<-c(sales=150, #coches por mes
+                  productivity.of.average.worker= 1, #coches por mes por persona
+                  inventory.coverage= 3, #meses
+                  time.to.correct.inventory= 2, #meses
+                  time.to.adjust.workforce= 10 #meses
+                )
+                InitialConditions4 <- c(inventory= 300, #coches
+                                       workforce= 100) #personas
+  
+                ini.time<-0 #meses
+                end.time<-100 #meses
+                time.step<-1 #meses
+                times4 <- seq(ini.time,
+                            end.time,
+                            time.step)
+  
+                intg.method<-c("rk4")
+                out <- ode(y = InitialConditions4,
+                           times = times4,
+                           func = sports.cars,
+                           parms = parameters4,
+                           method =intg.method )
+                           plot(out,
+                                xlab = "meses",
+                                ylab =c(""), col=c("darkblue"))
+```
+
+Al verse superada la producción por las ventas se observa una caída en el inventario de coches para venders y el modelo lo compensa incrementando la tasa de contrataciones, que a su vez  incrementa la fuerza de trabajo. Esto se comporta oscilatoriamente hasta que el sistema logre el equilibrio.
+
+3.3 ¿Cuánto tiempo toma para que el sistema vuelva al equilibrio dinámico? (10 puntos, productos: gráfico con anotaciones describiendo el tiempo que tarda el sistema en volver al equilibrio)¿Cuánto tiempo toma para que el sistema vuelva al equilibrio dinámico? (10 puntos, productos: gráfico con anotaciones describiendo el tiempo que tarda el sistema en volver al equilibrio)
+
+```{r}
+parameters4<-c(sales=150, #coches por mes
+                  productivity.of.average.worker= 1, #coches por mes por persona
+                  inventory.coverage= 3, #meses
+                  time.to.correct.inventory= 2, #meses
+                  time.to.adjust.workforce= 10 #meses
+                )
+                InitialConditions4 <- c(inventory= 300, #coches
+                                       workforce= 100) #personas
+  
+                ini.time<-0 #meses
+                end.time<-250 #meses
+                time.step<-1 #meses
+                times4 <- seq(ini.time,
+                            end.time,
+                            time.step)
+  
+                intg.method<-c("rk4")
+                out <- ode(y = InitialConditions4,
+                           times = times4,
+                           func = sports.cars,
+                           parms = parameters4,
+                           method =intg.method )
+                           plot(out,
+                                xlab = "meses",
+                                ylab =c(""), col=c("darkblue"))
+```
+
+Teniendo una venta de 150 coches por mes, como se puede observar en el gráfico, el equilibrio del modelo se alcanza entre los 100 y 130 meses, aproximadamente.
+
+3.4 Construye el diagrama de fase del sistema y describe el comportamiento esperado empleando este diagrama de fase (20 puntos, productos: diagrama de fase y explicación del comportamiento)
+
+```{r}
+sports.cars <- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+     
+    #Variables endógenas auxiliares
+     target.inventory<-sales*inventory.coverage
+     inventory.correction<-(target.inventory-inventory)/time.to.correct.inventory
+     target.production<-sales+inventory.correction
+     target.workforce<-target.production/productivity.of.average.worker
+     
+     #Variables de flujo
+     production<-workforce*productivity.of.average.worker
+     net.hire.rate<-(target.workforce-workforce)/time.to.adjust.workforce
+     
+     #Variables de Estado
+      dinventory<-production-sales
+      dworkforce<-net.hire.rate
+     list(c(dinventory,dworkforce), sales=sales, net.hire.rate=net.hire.rate)
+  })
+}
+
+parameters5<-c(sales=150, #coches por mes
+                  productivity.of.average.worker= 1, #coches por mes por persona
+                  inventory.coverage= 3, #meses
+                  time.to.correct.inventory= 2, #meses
+                  time.to.adjust.workforce= 10 #meses
+                )
+InitialConditions5 <- c(inventory= 300, #coches
+                        workforce= 100) #personas
+
+ini.time<-0 #meses
+end.time<-100 #meses
+time.step<-1 #meses
+times5 <- seq(ini.time,
+            end.time,
+            time.step)
+  
+intg.method<-c("rk4")
+
+out5 <- ode(y = InitialConditions5,
+           times = times5,
+           func = sports.cars,
+           parms = parameters5,
+           method =intg.method )
+
+plot(out5[,"workforce"], out5[,"net.hire.rate"], xlab="workforce", ylab = "net.hire.rate", type = "l", lwd = 2)
+```
+
+Se puede apreciar el comportamiento cíclico de la variable de flujo “net.hire.rate” ya que depende de la variable de estado “workforce”, por lo que el equilibrio en la fuerza de trabajo siempre será igual al número de coches vendidos. Para evitar esto se deberá aplicar una medida contracíclica que evite que la variable de flujo tienda a ser negativa para que no existan despidos de personal.
+
+3.5 Asume que la producción del ensamblador (i.e. assembler) constituye la demanda de la firma en el primer nivel de suministro (i.e. tier 1 supplier), y que la producción de la firma en la primera línea de suministro constituye la demanda de la firma en el segundo nivel de suministro (i.e. tier 2 supplier). Expande tu modelo original, asume que la estructura interna de estas firmas adicionales es idéntica a la estructura de la firma ensambladora (30 puntos, productos: modelo en R, envía tu modelo con la versión final de tu tarea)
+
+```{r}
+library("deSolve")
+
+sports.cars.supply.chain <- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+    
+     #Variable endógena auxiliar de la ensambladora
+     target.inventory<-sales*inventory.coverage
+     inventory.correction<-(target.inventory-inventory)/time.to.correct.inventory
+     target.production<-sales+inventory.correction
+     target.workforce<-target.production/productivity.of.average.worker
+    
+      #Variable de flujo de la ensambladora
+     production<-workforce*productivity.of.average.worker
+     net.hire.rate<-(target.workforce-workforce)/time.to.adjust.workforce
+     
+     #Variable de Estado de la ensambladora
+      dinventory<-production-sales
+      dworkforce<-net.hire.rate
+
+     #Variables endógenas auxiliares del proveedor Tier 1 
+     target.inventory1<-production*inventory.coverage
+     inventory.correction1<-(target.inventory1-inventory1)/time.to.correct.inventory
+     target.production1<-production+inventory.correction1
+     target.workforce1<-target.production1/productivity.of.average.worker
+     sales1<-production
+     
+     #Variables de flujo del proveedor Tier 1
+     production1<-workforce1*productivity.of.average.worker
+     net.hire.rate1<-(target.workforce1-workforce1)/time.to.adjust.workforce
+     
+     #Variables de estado del proveedor Tier 1
+      dinventory1<-production1-production
+      dworkforce1<-net.hire.rate1
+      
+     #Variables endógenas auxiliares del proveedor Tier 2 
+      
+     target.inventory2<-production1*inventory.coverage
+     inventory.correction2<-(target.inventory2-inventory2)/time.to.correct.inventory
+     target.production2<-production1+inventory.correction2
+     target.workforce2<-target.production2/productivity.of.average.worker
+     sales2<-production1
+     
+     #Variables de flujo del proveedor Tier 2
+     production2<-workforce2*productivity.of.average.worker
+     net.hire.rate2<-(target.workforce2-workforce2)/time.to.adjust.workforce
+     
+     #Variables de estado del proveedor Tier 2
+      dinventory2<-production2-production1
+      dworkforce2<-net.hire.rate2
+      
+     list(c(dinventory, dinventory1, dinventory2, dworkforce, dworkforce1, dworkforce2), sales=sales, sales1=sales1, sales2=sales2)
+  })
+}
+
+    parameters6<-c(sales=150, #coches por mes
+                  productivity.of.average.worker= 1, #coches por mes por persona
+                  inventory.coverage= 3, #meses
+                  time.to.correct.inventory= 2, #meses
+                  time.to.adjust.workforce= 10 #meses
+                )
+                InitialConditions6 <- c(inventory= 300, #coches
+                                       inventory1= 300, #coches
+                                       inventory2= 300, #coches
+                                       workforce= 100, #personas
+                                       workforce1= 100, #personas
+                                       workforce2= 100) #personas
+  
+                ini.time<-0 #meses
+                end.time<-180 #meses
+                time.step<-1 #meses
+                times6 <- seq(ini.time,
+                            end.time,
+                            time.step)
+  
+                intg.method<-c("rk4")
+                out6 <- ode(y = InitialConditions6,
+                           times = times6,
+                           func = sports.cars.supply.chain,
+                           parms = parameters6,
+                           method =intg.method )
+                           plot(out6,
+                                xlab = "meses",
+                                ylab =c(""),col=c("purple"))
+```
+
+3.6 Describe la dinámica de comportamiento que resulta de integrar estas nuevas firmas al modelo para las siguientes variables: sales, inventory y workforce (30 puntos, productos: gráficos describiendo el comportamiento del sistema para las tres firmas, comentarios que describan el comportamiento del sistema)
+
+De acuerdo a los gráficos del punto anterior, la ensambladora no presnta modificaciones en el comportamiento de su modelo ya que ésta define la demanda del proveedor tier 1 y éste, a su vez, con su producción, define la demanda del proveedor iter 2. Tanto el proveedor tier 1 como el tier 2 tienen un comportamiento oscilatorio en las variables sales, inventory y workforce, que luego tiende al equilibrio. El proveedor tier 2 tiene un comportamiento más volátil en sus ventas y fuerza de trabajo. Estos comportamientos en el modelo responden a retrasos en la producción, algo que se vuelve sumamente relevante ya que de ella dependen las ventas del nivel inferior siguiente.
+
+3.7 Describe e implementa una política que ayude a disminuir la inestabilidad de la cadena de suministro. Compara en un mismo gráfico el comportamiento del sistema con y sin política (30 puntos, productos: gráficos describiendo el comportamiento del sistema para las tres formas con y sin política, comentarios que describan el comportamiento del sistema)
+
+```{r}
+
+
+    parameters7<-c(sales=150, #coches por mes
+                  productivity.of.average.worker=2, #coches por mes por persona (ajuste de la política)
+                  inventory.coverage= 3, #meses
+                  time.to.correct.inventory= 2, #meses
+                  time.to.adjust.workforce= 3 #meses (ajuste)
+                )
+                InitialConditions7 <- c(inventory= 300, #coches
+                                       inventory1= 300, #coches
+                                       inventory2= 300, #coches
+                                       workforce= 100, #personas
+                                       workforce1= 100, #personas
+                                       workforce2= 100) #personas
+  
+                ini.time<-0 #meses
+                end.time<-60 #meses
+                time.step<-1 #meses
+                times7 <- seq(ini.time,
+                            end.time,
+                            time.step)
+  
+                intg.method<-c("rk4")
+                out <- ode(y = InitialConditions7,
+                           times = times7,
+                           func = sports.cars.supply.chain,
+                           parms = parameters7,
+                           method =intg.method )
+                           plot(out,
+                                xlab = "meses",
+                                ylab =c(""))
+```
+
+Para lograr que las empresas en la cadena de suministro logren el equilibrio más rápido se proponen 2 políticas:
+
+Incentivos a los trabajadores que logren aumentar su productividad a 2 coches por persona por mes y se mantengan constante. También puede ser inversión en investigación para encontrar una tecnología que duplique la productivdad por perosnas por mes.
+
+Reestructurar el proceso de RH para disminuir los tiempos en los que las empresas realizan ajustes de personal (contrataciones/despidos), pasando de 10 meses a 3 meses.
+
+Con estas políticas, en aproximadamente 40 meses las 3 empresas estarían en equilibrio.

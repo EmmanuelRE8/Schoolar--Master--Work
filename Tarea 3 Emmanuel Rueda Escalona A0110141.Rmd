@@ -1,0 +1,551 @@
+---
+title: "Tarea 3"
+author: "Emmanuel Rueda Escalona"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problema 1: Globalización y liberalización 
+
+### 1. Construye un modelo de dinámica de sistemas basado en el caso anterior, simula el modelo por un período de 50 años. Asegúrate que el modelo esté en equilibrio.
+
+```{r}
+library("deSolve")
+
+parameters<-c(depreciation.rate.cI=0.05,
+              investment.rate.cI=0.1,
+              production.rate.cI=1.0,
+              market.volume.cI=1.0,
+              market.volume.cII=1.0,
+              tax.rate.cI=0.2,
+              resource.costs.cI= 1.0,
+              standard.factor.cI= 1.0,
+              deterioration.rate.cI=0.05,
+              reference.price.cI=5.0,
+              
+              depreciation.rate.cII=0.05,
+              investment.rate.cII=0.1,
+              production.rate.cII=1.0,
+              market.volume.cII=1.0,
+              market.volume.cIII=1.0,
+              tax.rate.cII=0.2,
+              resource.costs.cII= 1.0,
+              standard.factor.cII= 1.0,
+              deterioration.rate.cII=0.05,
+              reference.price.cII=5.0
+              )
+
+Initial.Conditions <- c(production.capacity.cI = 1.0,
+                        standards.of.cI=1.0,
+                        production.capacity.cII = 0.1,
+                        standards.of.cII=0.1
+                        )
+
+globalization.and.liberalization<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#País 1
+#Variables endógenas
+production.costs.cI<-standards.of.cI*standard.factor.cI
+product.costs.cI<-resource.costs.cI+production.costs.cI
+production.costs.cII<-standards.of.cII*standard.factor.cII
+product.costs.cII<-resource.costs.cII+production.costs.cII
+product.price.cI<-product.costs.cI*(1+tax.rate.cI)
+product.price.cII<-product.costs.cII*(1+tax.rate.cII)
+customs.duties.raised.by.cI<-ifelse(t<10,0.5,0)
+subsidy.cII<-ifelse(t<10,0,0)
+customs.duties.raised.by.cII<-ifelse(t<10,0,0)
+subsidy.cI<-ifelse(t<10,0.75,0)
+price.of.cII.products.in.cI<-product.price.cII*(1-subsidy.cII+customs.duties.raised.by.cI)
+price.of.cI.products.in.cII<-product.price.cI*(1-subsidy.cI+customs.duties.raised.by.cII)
+supply.cI<-production.capacity.cI*1*production.rate.cI
+price.ratio.of.domestic.versus.imported.products.in.cI<-product.price.cI/price.of.cII.products.in.cI
+price.ratio.of.domestic.versus.imported.products.in.cII<-product.price.cII/price.of.cI.products.in.cII
+percentage.purchased.by.cI.from.cI<-approx(c(0.0,0.5,1.0,1.5,2.0,5.0),
+                                            c(1.0,1.0,0.5,0.0,0.0,0.0), 
+                                            xout=price.ratio.of.domestic.versus.imported.products.in.cI)$y
+percentage.purchased.by.cII.from.cII<- approx(c(0.0,0.5,1.0,1.5,2.0,5.0),
+                                            c(1.0,1.0,0.5,0.0,0.0,0.0), 
+                                            xout=price.ratio.of.domestic.versus.imported.products.in.cII)$y
+demand.for.products.from.cI<-percentage.purchased.by.cI.from.cI*market.volume.cI+market.volume.cII*(1-percentage.purchased.by.cII.from.cII)
+surplus.cI<-supply.cI-demand.for.products.from.cI
+investment.factor.cI<-2
+investment.function.cI<-ifelse(t<10,2,investment.factor.cI)
+investments.cI<-ifelse(surplus.cI<=0, investment.rate.cI*production.capacity.cI*investment.function.cI, 0)
+progress.factor.cI<-2
+progress.function.cI<-ifelse(t<10,2,progress.factor.cI)
+investments.in.progress.cI<-investments.cI*progress.function.cI
+progress.cI<-standards.of.cI*investments.in.progress.cI*(1-product.price.cI/reference.price.cI)
+
+#Variables de flujo
+depreciation.cI<-depreciation.rate.cI*production.capacity.cI
+deterioration.cI<-standards.of.cI*deterioration.rate.cI
+
+#Variables de estado
+dproduction.capacity.cI<-investments.cI-depreciation.cI #porcentaje
+dstandards.of.cI<-progress.cI-deterioration.cI
+
+#País 2
+#Variables endógenas
+
+supply.cII<-production.capacity.cII*1*production.rate.cII
+product.price.cII<-product.costs.cII*(1+tax.rate.cII)
+demand.for.products.from.cII<-percentage.purchased.by.cII.from.cII*market.volume.cII+market.volume.cI*(1-percentage.purchased.by.cI.from.cI)
+surplus.cII<-supply.cII-demand.for.products.from.cII
+investment.factor.cII<-2
+investment.function.cII<-ifelse(t<10,0.2,2)
+investments.cII<-ifelse(surplus.cII<=0, investment.rate.cII*production.capacity.cII*investment.function.cII, 0)
+progress.factor.cII<-2
+progress.function.cII<-ifelse(t<10,1,2)
+investments.in.progress.cII<-investments.cII*progress.function.cII
+progress.cII<-standards.of.cII*investments.in.progress.cII*(1-product.price.cII/reference.price.cII)
+
+#Variables de flujo
+depreciation.cII<-depreciation.rate.cII*production.capacity.cII
+deterioration.cII<-standards.of.cII*deterioration.rate.cII
+
+#Variables de estado
+dproduction.capacity.cII<-investments.cII-depreciation.cII #porcentaje
+dstandards.of.cII<-progress.cII-deterioration.cII
+
+list(c(dproduction.capacity.cI,dstandards.of.cI,dproduction.capacity.cII,dstandards.of.cII), investments.cI=investments.cI, investments.cII=investments.cII)
+})
+}
+
+times<-seq(0, #tiempo inicial
+          50, #tiempo final
+          1)#número de repeticiones
+
+intg.method<-c("rk4")
+
+out <- ode(y = Initial.Conditions,
+           times = times,
+           func = globalization.and.liberalization,
+           parms = parameters,
+           method =intg.method)
+```
+### 2. Gráfica los efectos sobre production capacity y standards para los dos países.
+
+```{r}
+plot(out, mfrow = c(1, 2), col = c("darkgreen"))
+```
+ 
+ 
+### 3. Asume que el t=10 el comercio se liberaliza. ¿Qué sucede en los dos países? Explica
+ 
+Tras la liberación del mercado, la capacidad de producción del país 1 se desploma debido al incremento de las inversiones en el país 2. 
+
+Antes de la liberación la capacidad de producción y los estandares del país 2 estan muy por debajo del país 1. La globalización fue determinante para que el país 2 alcanzara la estabilidad debido a que la globalización detonó un cambio en las funciones de inversión y progreso, ambas variables de estado. 
+
+En términos de comercio, a raiz de la liberación del mercado, el subsidio del producto del país 1 en el país 2 se elimina, lo que incrementa su precio, afectando finalmente la decision de compra del país 2. De igual forma, el impuesto aduanal del país 1 pasa de 75% a 0, lo que repercute en el precio del producto del país 2 en el país 1, el precio se reduce lo que tiene un fuerte impacto en la decision de compra del pais 1. Todos estos cambios se reflejan en variaciones en la oferta y demanda de cada país. Posteriormente condiciona los factores de inversión y progreso, mismos de los que depende el comportamiento en el tiempo de la capacidad de producción para ambos países.
+
+### 4. Construye un diagrama causal del modelo o un diagrama stock-and-flow simplificado. Emplea este diagrama para describir el comportamiento que observas.
+
+<center>![imagen](Globalization.jpg)</center>
+
+### 5. Construye un diagrama de fase que englobe los principales elementos dinámicos del modelo. ¿Qué trayectoria sigue el sistema si inicia bajo diferentes condiciones iniciales?, ¿cuántos puntos de equilibrio identificas?, ¿son estables o inestables?
+
+```{r}
+plot(out[,"production.capacity.cI"], out[,"investments.cI"], xlab="production.capacity.cI", ylab = "investments.cI", type = "p", lwd = 2, main="Diagrama de fase, país I")
+```
+
+```{r}
+plot(out[,"production.capacity.cII"], out[,"investments.cII"], xlab="production.capacity.cII", ylab = "investments.cII", type = "p", lwd = 2, main="Diagrama de fase, país II")
+```
+
+Ambos sistemas tienen una trayectoria lineal. El país 1 tiene varios puntos de equilibrio a los que se llega cuando su capacidad de producción está al 75% y 115%, tendiendo a un comportamiento de inestabilidad. El país 2 se puede identificar  que el equilibrio se alcanza hasta que la capacidad de producción llega a 135% aproximadamente, presentando un comportamiento estable.
+
+## Problema 2: Colapso de Civilizaciones
+
+### Construye un modelo de dinámica de sistemas basado en el caso anterior. Calcula el valor de los exponentes y las variables de flujo omitidas de tal manera que el colapso de la población Maya ocurra en el año 800. Simula 2000 años de evolución iniciando en el año 1,000 A.C. 
+
+```{r}
+collapse.of.civilizations<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#Variables endógenas
+food.produced<-fertility.of.lands*agricultural.land
+demand.for.food<-consumed.food.per.person*population
+gap<-demand.for.food-food.produced
+
+#Variables de flujo
+deforestation<-min(gap/max(fertility.of.lands,1),forest/4)/intensity
+fertility.losses<-fertility.of.lands*min(2,(agricultural.land/forest)^1.5)/intensity
+natural.population.increase<-population*natural.increase.rate
+emigration<-(gap/consumed.food.per.person)*emigration.ratio
+
+#Variables de estado
+dagricultural.land<- deforestation
+dforest<- -1*deforestation
+dfertility.of.lands<- -1*fertility.losses
+dpopulation<-natural.population.increase-emigration
+
+
+list(c(dforest, dagricultural.land, dfertility.of.lands, dpopulation), deforestation=deforestation, fertility.losses=fertility.losses)
+  })
+}
+
+parameters2<-c(intensity=1,
+              emigration.ratio=0.05,
+              consumed.food.per.person=200, #kg por persona por año
+              natural.increase.rate=(2^(1/408)-1))
+
+InitialConditions2 <- c(forest = 5000,
+                      agricultural.land=8,
+                      fertility.of.lands=5000000,
+                      population=100000)
+
+times2 <- seq(-1000, #tiempo inicial
+             1000, #tiempo final
+             1) #lapso de tiempo
+
+intg.method<-c("rk4")
+
+#Simulate model
+
+out2 <- ode(y = InitialConditions2,
+           times = times2,
+           func = collapse.of.civilizations,
+           parms = parameters2,
+           method =intg.method )
+```
+
+### 2. ¿Qué pasa con la población? Gráfica el comportamiento de esta variable, ¿corresponde el comportamiento de tu modelo al comportamiento observado?
+
+```{r}
+plot(out2, mfrow = c(1, 3), col = c("darkblue"))
+```
+
+La población empieza a colapsar  hasta su desaparición alrededor del año 800
+
+### 3. Introduce cambios en el modelo que hagan más realista su comportamiento
+
+```{r}
+collapse.of.civilizations2<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#Variables endogenas
+food.produced<-fertility.of.lands*agricultural.land
+demand.for.food<-consumed.food.per.person*population
+gap<-demand.for.food-food.produced
+
+#Variables de flujo
+deforestation<-min(gap/max(fertility.of.lands,1),forest/4)/intensity
+fertility.losses<-fertility.of.lands*min(2,(agricultural.land/forest)^1.5)/intensity
+natural.population.increase<-population*natural.increase.rate
+emigration<-(gap/consumed.food.per.person)*emigration.ratio
+
+#Variables de stock
+dagricultural.land<- deforestation
+dforest<- -1*deforestation
+dfertility.of.lands<- -1*fertility.losses
+dpopulation<-natural.population.increase-emigration
+
+
+list(c(dforest, dagricultural.land, dfertility.of.lands, dpopulation), deforestation=deforestation, fertility.losses=fertility.losses)
+  })
+}
+
+parameters3<-c(intensity=1.2,
+              emigration.ratio=0.01,
+              consumed.food.per.person=150, #kg per person per year
+              natural.increase.rate=(2^(1/408)-1))
+
+InitialConditions3 <- c(forest = 5000,
+                      agricultural.land=8,
+                      fertility.of.lands=5000000,
+                      population=100000)
+
+times3 <- seq(-1000, #tiempo inicial
+             1000, #tiempo final
+             1) #lapso de tiempo
+
+intg.method<-c("rk4")
+
+#Simulate model
+
+out3 <- ode(y = InitialConditions3,
+           times = times3,
+           func = collapse.of.civilizations2,
+           parms = parameters3,
+           method =intg.method )
+
+plot(out3, mfrow = c(1, 3), col = c("purple"))
+```
+
+**Se puede ver un retraso en el tiempo de colapso si se aumenta la intensidad en 20%, la emigración se reduce al 1% y el consumo de comida por persona cambia a 150 kg anuales.** 
+
+### 4. ¿Qué tan sensible es el modelo a cambios marginales en los parámetros o a cambios estructurales? Presenta al menos dos ejemplos.
+
+Ejemplo 1. Con cambios marginales
+
+```{r}
+collapse.of.civilizations3<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#Variables endogenas
+food.produced<-fertility.of.lands*agricultural.land
+demand.for.food<-consumed.food.per.person*population
+gap<-demand.for.food-food.produced
+
+#Variables de flujo
+deforestation<-min(gap/max(fertility.of.lands,1),forest/4)/intensity
+fertility.losses<-fertility.of.lands*min(2,(agricultural.land/forest)^1.5)/intensity
+natural.population.increase<-population*natural.increase.rate
+emigration<-(gap/consumed.food.per.person)*emigration.ratio
+
+#Variables de estado
+dagricultural.land<- deforestation
+dforest<- -1*deforestation
+dfertility.of.lands<- -1*fertility.losses
+dpopulation<-natural.population.increase-emigration
+
+
+list(c(dforest, dagricultural.land, dfertility.of.lands, dpopulation), deforestation=deforestation, fertility.losses=fertility.losses)
+  })
+}
+
+parameters4<-c(intensity=1.2,
+              emigration.ratio=0.01,
+              consumed.food.per.person=100, #kg per person per year
+              natural.increase.rate=(2^(1/408)-1))
+
+parameters5<-c(intensity=1.3,
+              emigration.ratio=0.02,
+              consumed.food.per.person=150, #kg per person per year
+              natural.increase.rate=(2^(1/408)-1))
+
+parameters6<-c(intensity=1.4,
+              emigration.ratio=0.03,
+              consumed.food.per.person=200, #kg per person per year
+              natural.increase.rate=(2^(1/408)-1))
+
+InitialConditions4 <- c(forest = 5000,
+                      agricultural.land=8,
+                      fertility.of.lands=5000000,
+                      population=100000)
+
+times4 <- seq(-1000, #tiempo inicial
+             2000, #tiempo final
+             1) #lapso de tiempo
+
+intg.method<-c("rk4")
+
+#Modelo
+
+out4 <- ode(y = InitialConditions4,
+           times = times4,
+           func = collapse.of.civilizations3,
+           parms = parameters4,
+           method =intg.method )
+
+out5 <- ode(y = InitialConditions4,
+           times = times4,
+           func = collapse.of.civilizations3,
+           parms = parameters5,
+           method =intg.method )
+
+out6 <- ode(y = InitialConditions4,
+           times = times4,
+           func = collapse.of.civilizations3,
+           parms = parameters6,
+           method =intg.method )
+
+
+plot(out4, out4, out5, mfrow = c(1, 3), col = c("green", "red", "blue"))
+```
+
+**Ante cambios marginales el comportamiento es el mismo, sólo se retrasan los efectos.**
+
+Ejemplo 2. Con cambios estructurales
+
+```{r}
+collapse.of.civilizations4<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#Variables Endogenas
+food.produced<-fertility.of.lands*agricultural.land
+demand.for.food<-consumed.food.per.person*population
+gap<-demand.for.food-food.produced
+
+#Variables de flujo
+deforestation<-min(gap/max(fertility.of.lands,1),forest/4)/intensity
+fertility.losses<-fertility.of.lands*min(2,(agricultural.land/forest)^1.5)/intensity
+natural.population.increase<-population*natural.increase.rate
+emigration<-(gap/consumed.food.per.person)*emigration.ratio
+
+#Variables de Estao
+dagricultural.land<- deforestation
+dforest<- -1*deforestation
+dfertility.of.lands<- -1*fertility.losses
+dpopulation<-natural.population.increase-emigration
+
+
+list(c(dforest, dagricultural.land, dfertility.of.lands, dpopulation), deforestation=deforestation, fertility.losses=fertility.losses)
+  })
+}
+
+collapse.of.civilizations5<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#Variables endogenas
+food.produced<-fertility.of.lands*agricultural.land
+demand.for.food<-consumed.food.per.person*population
+gap<-demand.for.food-food.produced
+
+#Variables de flujo
+deforestation<-min(gap/max(fertility.of.lands,1),forest/4)/intensity
+fertility.losses<-fertility.of.lands*min(2,(agricultural.land/forest)^1.5)/intensity
+natural.population.increase<-population*natural.increase.rate
+emigration<-(gap/consumed.food.per.person)*emigration.ratio
+fertility.recuperation<-0.6*fertility.losses
+
+#Variables de Estado
+dagricultural.land<- deforestation
+dforest<- -1*deforestation
+dfertility.of.lands<- -0.5*fertility.losses+fertility.recuperation
+dpopulation<-natural.population.increase-emigration
+
+
+list(c(dforest, dagricultural.land, dfertility.of.lands, dpopulation), deforestation=deforestation, fertility.losses=fertility.losses)
+  })
+}
+
+parameters7<-c(intensity=1.2,
+              emigration.ratio=0.01,
+              consumed.food.per.person=100, #kg per person per year
+              natural.increase.rate=(2^(1/408)-1))
+
+InitialConditions5 <- c(forest = 5000,
+                      agricultural.land=8,
+                      fertility.of.lands=5000000,
+                      population=100000)
+
+times5 <- seq(-1000, #initial time
+             5000, #end of simulation
+             1) #time step
+
+intg.method<-c("rk4")
+
+#Modelo
+
+out7 <- ode(y = InitialConditions5,
+           times = times5,
+           func = collapse.of.civilizations4,
+           parms = parameters7,
+           method =intg.method )
+
+out8 <- ode(y = InitialConditions5,
+           times = times5,
+           func = collapse.of.civilizations5,
+           parms = parameters7,
+           method =intg.method )
+
+plot(out7, out8, mfrow = c(1, 3), col = c("darkgreen", "purple"))
+```
+
+**El modelo es muy sensible ante cambios estructurales. Agregando variables que pudieran contrarestar el efecto negativo de otras, pueden provocar que el modelo no llegue al colapso.**
+
+### 5. Propón una política (i.e. preferentemente una política dinámica) que evite el colapso de la civilización Maya. Implementa esta política en el modelo y compara gráficamente el comportamiento del sistema con y sin tu política.
+
+**La política que se propone para evitar el colpaso es fomentar la recuperación de la fertilidad, mediante la recuperación de al menos 50% de las pérdidas de fertilidad**
+
+```{r}
+collapse.of.civilizations5<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#Variables endogenas
+food.produced<-fertility.of.lands*agricultural.land
+demand.for.food<-consumed.food.per.person*population
+gap<-demand.for.food-food.produced
+
+#Variables de flujo
+deforestation<-min(gap/max(fertility.of.lands,1),forest/4)/intensity
+fertility.losses<-fertility.of.lands*min(2,(agricultural.land/forest)^1.5)/intensity
+natural.population.increase<-population*natural.increase.rate
+emigration<-(gap/consumed.food.per.person)*emigration.ratio
+
+#Variables de Estado
+dagricultural.land<- deforestation
+dforest<- -1*deforestation
+dfertility.of.lands<- -1*fertility.losses
+dpopulation<-natural.population.increase-emigration
+
+
+list(c(dforest, dagricultural.land, dfertility.of.lands, dpopulation), deforestation=deforestation, fertility.losses=fertility.losses)
+  })
+}
+
+collapse.of.civilizations6<- function(t, state, parameters) {
+  with(as.list(c(state,parameters)), {
+
+#Variables Endogenas
+food.produced<-fertility.of.lands*agricultural.land
+demand.for.food<-consumed.food.per.person*population
+gap<-demand.for.food-food.produced
+
+#Variables de flujo
+deforestation<-min(gap/max(fertility.of.lands,1),forest/4)/intensity
+fertility.losses<-fertility.of.lands*min(2,(agricultural.land/forest)^1.5)/intensity
+natural.population.increase<-population*natural.increase.rate
+emigration<-(gap/consumed.food.per.person)*emigration.ratio
+fertility.recuperation<-0.5*fertility.losses
+
+#Variables de Estado
+dagricultural.land<- deforestation
+dforest<- -1*deforestation
+dfertility.of.lands<- -0.5*fertility.losses+fertility.recuperation
+dpopulation<-natural.population.increase-emigration
+
+
+list(c(dforest, dagricultural.land, dfertility.of.lands, dpopulation), deforestation=deforestation, fertility.losses=fertility.losses)
+  })
+}
+
+parameters8<-c(intensity=1.2,
+              emigration.ratio=0.01,
+              consumed.food.per.person=100, #kg per person per year
+              natural.increase.rate=(2^(1/408)-1))
+
+InitialConditions8 <- c(forest = 5000,
+                      agricultural.land=8,
+                      fertility.of.lands=5000000,
+                      population=100000)
+
+times8 <- seq(-1000, #tiempo inicial
+             2000, #tiempo final
+             1) #lapso
+
+intg.method<-c("rk4")
+
+
+
+out8 <- ode(y = InitialConditions8,
+           times = times8,
+           func = collapse.of.civilizations5,
+           parms = parameters8,
+           method =intg.method )
+
+out9 <- ode(y = InitialConditions8,
+           times = times8,
+           func = collapse.of.civilizations6,
+           parms = parameters8,
+           method =intg.method )
+
+plot(out8, out9, mfrow = c(1, 3), col = c("blue", "red"))
+```
+
+### 5. Construye un diagrama de fase del modelo sin política. ¿Cuál es tu conclusión?, ¿cómo cambia este diagrama de fase con tu política?
+
+```{r}
+plot(out8[,"population"], out8[,"fertility.losses"], xlab="population", ylab = "fertility.losses", type = "p", lwd = 2)
+```
+
+```{r}
+plot(out9[,"population"], out8[,"fertility.losses"], xlab="population", ylab = "fertility.losses", type = "p", lwd = 2)
+```
+
+**La implementación de la política ha generado que un incremente de la mejor forma de la población, aunque la perdida de fertilidad no haya sufrido cambios.**
