@@ -3,8 +3,8 @@ library("deSolve")
 parameters11<-c(normal.birth.rate = 0.0035, #sin dimensiones
                 regeneration.rate = 1.2, #sin dimensiones
                 carrying.capacity = 7500000, #unidades del recurso
-                min.regeneration.rate = 0.01, #sin dimensión
-                rapid.resource.depletion.time = 1, #año
+                min.regeneration.rate = 0.01, #sin dimensiÃ³n
+                rapid.resource.depletion.time = 1, #aÃ±o
                 renewable.resource.consumption.per.capita = 1 #unidades de recurso por persona
 ) 
 
@@ -14,7 +14,7 @@ InitialConditions11 <- c(population = 1000000 ,
 overshoot.and.collapse <- function(t, state, parameters11) {
   with(as.list(c(state,parameters11)), {
     
-    #Variables endógenas auxiliares
+    #Variables endÃ³genas auxiliares
     per.capita.renewable.resource.availability<-renewable.resources/population
     normal.lifetime<-max(15, min(100,66)) #66 es el promedio de vida propuesto.
     resource.availability.dependent.lifetime<-normal.lifetime*per.capita.renewable.resource.availability
@@ -46,4 +46,4 @@ out <- ode(y = InitialConditions11,
            parms = parameters11,
            method =intg.method )
 
-plot(out, col = c("darkgreen"), main = c("Población", "Recurso Renovables"),xlab="Tiempo transcurrido (años)",ylab=c("Personas", "Unidades de recursos renovables"), mfrow = c(1, 2))
+plot(out, col = c("darkgreen"), main = c("PoblaciÃ³n", "Recurso Renovables"),xlab="Tiempo transcurrido (aÃ±os)",ylab=c("Personas", "Unidades de recursos renovables"), mfrow = c(1, 2))
