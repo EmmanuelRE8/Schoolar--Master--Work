@@ -1,0 +1,632 @@
+---
+title: "Tarea 3"
+author: "Emmanuel Rueda Escalona"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<center style="color:black; font-size: 200%"> **Problem Set 3**</center>
+
+## Instrucciones
+
+Siéntase libres de trabajar en grupo mientras resuelve esta tarea. Sin embargo, las entregas sólo se permiten en forma individual. La bandeja de entrega estará disponible en Canvas. Por favor, hagan que sus escritos sean legibles. En particular para las preguntas empíricas, incluyan los resultados estadísticos necesarios para responder a las preguntas. Responda de manera independiente a cada una de las preguntas.
+
+**Puntos totales:100**
+
+# Parte 1 Teoría
+
+### 1. Dibuje un ejemplo (de tu propia invención) de una partición de espacio de características bidimensionales que podría resultar de la división binaria recursiva. 
+
+Tu ejemplo debe contener al menos seis regiones. Dibuja un árbol de decisión correspondiente a esta partición. Asegúrate de etiquetar todos los aspectos de tus figuras, incluyendo las regiones R1,R2,..., los puntos de corte t1,t2,..., y así sucesivamente.
+
+**Sugerencia: El resultado debe parecerse a las figuras 8.1 y 8.2.**
+
+```{r}
+part <- data.frame(c(25,25,75,75,70,80),c(75,25,75,50,25,25))
+
+plot(part,xlim= c(0,100), ylim= c(0,100),pch="",xlab="X",ylab="Y")
+
+lines(x = c(50,50), y = c(-10,110), col = "dark green")
+lines(x = c(-10,50), y = c(65,65), col = "dark green")
+lines(x = c(50,110), y = c(60,60), col = "dark green")
+lines(x = c(50,110), y = c(40,40), col = "dark green")
+lines(x = c(75,75), y = c(-10,40), col = "dark green")
+
+text(x = 50, y = 108, labels = c("t1"), col = "blue")
+text(x = 0, y = 70, labels = c("t2"), col = "blue")
+text(x = 100, y = 65, labels = c("t3"), col = "blue")
+text(x = 100, y = 45, labels = c("t4"), col = "blue")
+text(x = 73, y = 1, labels = c("t5"), col = "blue")
+
+text(part,labels=paste("R",1:6,sep=""))
+```
+
+
+### 2. Considere el índice de Gini, el error de clasificación y la entropía en una clasificación simple con dos clases. Crea un solo gráfico que muestre cada una de estas cantidades en función de ˆpm1. 
+El eje x debe mostrar ˆpm1, con un rango de 0 a 1, y el eje y debe mostrar el valor del índice de Gini, el error de clasificación y la entropía.
+
+**Sugerencia: En un entorno con dos clases, ˆpm1=1−ˆpm2. Podrías hacer este gráfico a mano, pero será mucho más fácil de hacer en R.**
+
+```{r}
+p <- seq(0,1, 0.00005)
+
+gini <- (2*p*(1-p))
+
+error.clasf <- (1-pmax(p,1-p))
+
+entropia <- -(p*log(p)+(1-p)*log(1-p))
+
+
+plot(NA,NA,xlim=c(0,1),ylim=c(0,1),xlab="p^m1", ylab="Clasificaciones")
+title ("Clasificación Simple")
+
+lines(p, error.clasf, ylim=c(0,1), col="red")
+lines(p,gini, ylim=c(0,1),  col="blue")
+lines(p, entropia,  ylim=c(0,1), col="dark green")
+
+legend(x='topright',legend=c('Error de Clasificación','Índice de Gini','Entropía'),
+       col=c('red','blue', 'dark green'),lty=1,cex=1)
+```
+
+
+# Parte 2 Problemas aplicados
+
+### 3. En el laboratorio, aplicamos random forests a la base de datos Boston usando mtry=6 y usando ntree=25 y ntree=500. Crea un gráfico que muestra el error de prueba resultante de random forests en este conjunto de datos para un rango más completo de valores para mtry y ntree. Puedes modelar tu gráfica según la Figura 8.10. Describir los resultados obtenidos.
+```{r message=TRUE, warning=FALSE}
+library(MASS)
+library(randomForest)
+library(tree)
+```
+
+```{r}
+set.seed(1)
+subset<-sample(1:nrow(Boston),nrow(Boston)*0.7)
+Boston.train<-Boston[subset,-14]
+Boston.test<-Boston[-subset,-14]
+y.train<-Boston[subset,14]
+y.test<-Boston[-subset,14]
+
+rfmodel1<-randomForest(Boston.train,y=y.train,xtest = Boston.test,ytest = y.test,ntree=500,mtry=ncol(Boston.train))
+rfmodel2<-randomForest(Boston.train,y.train,xtest = Boston.test,ytest = y.test,ntree=500,mtry=(ncol(Boston.train))/2)
+rfmodel3<-randomForest(Boston.train,y.train,xtest = Boston.test,ytest = y.test,ntree=500,mtry=(ncol(Boston.train))^(0.5))
+rfmodel4<-randomForest(Boston.train,y.train,xtest = Boston.test,ytest = y.test,ntree=500,mtry=(ncol(Boston.train))/3)
+rfmodel5<-randomForest(Boston.train,y.train,xtest = Boston.test,ytest = y.test,ntree=500,mtry=(ncol(Boston.train))/4)
+
+plot(1:500,rfmodel1$test$mse,col="red",type="l",xlab = "Number of Trees",ylab = "Test MSE",ylim = c(10,25))
+lines(1:500,rfmodel2$test$mse, col="orange",type="l")
+lines(1:500,rfmodel3$test$mse, col="dark green",type="l")
+lines(1:500,rfmodel4$test$mse, col="blue",type="l")
+lines(1:500,rfmodel5$test$mse, col="black",type="l")
+legend("topright",c("m=p=13","m=p/2","m=sqrt(p)","m=p/3","m=p/4"),col=c("red","orange","dark green","blue","black"),cex=0.5,lty=1)
+```
+
+Vemos que Test MSE disminuye con el aumento en el número de árboles. Se estabiliza después de cierto número de árboles y no se observa ninguna mejora adicional.
+
+El mínimo de prueba MSE se observa cuando se elige m = sqrt (p)
+
+### 4. Este problema tiene que ver con el conjunto de datos OJ que forma parte del paquete ISLR.
+
+**(a)** Crea un conjunto de entrenamiento que contenga una muestra aleatoria de 800 observaciones y un conjunto de pruebas que contenga las observaciones restantes.
+
+```{r message=FALSE, warning=FALSE}
+library(ISLR)
+attach(OJ)
+summary(OJ)
+```
+
+```{r}
+train <- sample(1:nrow(OJ), 800)
+OJ.train = OJ[train, ]
+OJ.test = OJ[-train, ]
+```
+
+
+
+**(b)** Ajusta un árbol a los datos de entrenamiento, con Purchase como la respuesta y las otras variables como predictores. Utilice la función summary() para producir estadísticas resumidas sobre el árbol, y describa los resultados obtenidos. ¿Cuál es la tasa de error de entrenamiento? ¿Cuántos nodos terminales tiene el árbol?
+
+```{r}
+tree.oj = tree(Purchase~., data=OJ.train)
+summary(tree.oj)
+```
+
+
+Solo se utilizaron 4 variables para construir el árbol
+
+Hay 8 nodos terminales
+
+La tasa de error de entrenamiento del árbol es 0.1538
+
+
+**(c)** Escribe el nombre del objeto del árbol para obtener una salida (output) de texto detallada. Elija uno de los nodos terminales e interprete la información que se muestra.
+
+```{r}
+tree.oj
+```
+
+**Nodo 10** 
+
+
+Como lo indica el asterisco es terminal
+
+Criterio dividido: SalePriceMM < 2.04
+
+Número de obs. en este nodo: 132
+
+Desviación: 128.1 MM
+
+81% de obs en este nodo son MM
+
+
+
+**(d)** Crea una gráfica del árbol, e interpreta los resultados.
+
+```{r}
+plot(tree.oj)
+text(tree.oj)
+```
+
+LoyalCH es el predictor más importante de este árbol.
+Hay 2 divisiones basadas solo en la pureza del nodo
+
+**(e)** Predice la respuesta en los datos de la prueba, y producir una matriz de confusión comparando las etiquetas de la prueba con las etiquetas de la prueba pronosticada. ¿Cuál es la tasa de error de la prueba?
+
+```{r}
+tree.pred = predict(tree.oj, OJ.test, type = "class")
+table(tree.pred, OJ.test$Purchase)
+```
+
+```{r}
+1-(148+71)/270
+```
+
+
+**(f)** Aplica la función cv.tree() al conjunto de entrenamiento para determinar el tamaño óptimo del árbol.
+
+```{r}
+cv.oj <- cv.tree(tree.oj, FUN = prune.misclass)
+cv.oj
+```
+
+
+**(g)** Produce un gráfico con el tamaño del árbol en el eje x y la tasa de error de clasificación cruzada en el eje y.
+
+```{r}
+plot(cv.oj$size, cv.oj$dev, type = "b", xlab = "Tree size", ylab = "Deviance")
+```
+
+
+**(h)** ¿Qué tamaño de árbol corresponde a la menor tasa de error de clasificación validada cruzada?
+
+Un tamaño de árbol de **4** corresponde a la tasa de error de validación cruzada más baja.
+
+**(i)** Produe un árbol podado que corresponda al tamaño óptimo de árbol obtenido mediante validación cruzada. Si la validación cruzada no conduce a la selección de un árbol podado, crea un árbol podado con cinco nodos terminales.
+
+```{r}
+prune.oj = prune.misclass(tree.oj, best=4)
+plot(prune.oj)
+text(prune.oj, pretty = 0)
+```
+
+
+**(j)** Compare los índices de error de entrenamiento entre los árboles podados y no podados. ¿Cuál es más alto?
+
+```{r}
+summary(tree.oj)
+```
+
+```{r}
+summary(prune.oj)
+```
+
+
+**R= El árbol podado tiene una tasa de error de entrenamiento ligeramente más alta que el no podado, es decir de 15.88% vs. 15.38% **
+
+**(k)** Compare los índices de error de la prueba entre los árboles podados y no podados. ¿Cuál es más alto?
+
+```{r}
+prune.pred <- predict(prune.oj, OJ.test, type = "class")
+table(prune.pred, OJ.test$Purchase)
+```
+
+```{r}
+1-(134+81)/270
+```
+ **R= 0.1888889 vs 0.2037037. Definitivamente el podado es más alto**
+
+### 5. Genera un conjunto de datos simulados de dos clases con 100 observaciones y dos características en las que hay una separación visible pero no lineal entre las dos clases.
+
+Muestra que en este escenario, una máquina de vector de apoyo con un kernel polinómico (con grado superior a 1) o un kernel radial superará a un clasificador de vector de apoyo en los datos de entrenamiento. 
+
+
+¿Qué técnica tiene mejor rendimiento en los datos de la prueba? Crea gráficos e informes de las tasas de error de entrenamiento y de prueba para respaldar sus afirmaciones.
+
+
+Generar los datos y gráficar 
+
+```{r}
+set.seed(1)
+transl <- 3
+X <- matrix(rnorm(100 * 2), ncol = 2)
+X[1:30, ] <- X[1:30, ] + transl
+X[31:60, ] <- X[31:60, ] - transl
+y <- c(rep(0, 60), rep(1, 40))
+dat <- data.frame(x = X, y = as.factor(y))
+plot(X, col = y + 1)
+```
+
+Dividir en conjunto de entrenamiento y prueba:
+
+```{r}
+train <- sample(100, 80)
+dat.train <- dat[train, ]
+dat.test <- dat[-train, ]
+```
+
+Ajuste con clasificador de vectores de soporte:
+
+```{r}
+library(e1071)
+svm.lin <- svm(y ~ ., data = dat.train, kernel = 'linear', scale = FALSE)
+plot(svm.lin, data = dat.train)
+```
+
+```{r}
+summary(svm.lin)
+```
+
+Calcular el error de entrenamiento del clasificador de vectores de soporte:
+
+```{r}
+table(predict = svm.lin$fitted, truth = dat.train$y)
+```
+
+La tasa de error: 38/(47+33) = 42.22.
+El clasificador de vectores de soporte marca todos los puntos de entrenamiento como clase cero, lo que significa que este modelo es inútil en este conjunto de entrenamiento.
+
+Ajuste con kernel polinomial y calcule la tasa de error de entrenamiento:
+
+```{r}
+svm.poly <- svm(y ~ ., data = dat.train, kernel = 'polynomial', scale = FALSE)
+plot(svm.poly, data = dat.train)
+```
+
+```{r}
+table(predict = svm.poly$fitted, truth = dat.train$y)
+```
+
+Hay 2 predicciones correctas.
+
+Ajuste con kernel radial y calcule la tasa de error de seguimiento:
+
+```{r}
+svm.rad <- svm(y ~ ., data = dat.train, kernel = 'radial', scale = FALSE)
+plot(svm.rad, data = dat.train)
+```
+
+```{r}
+table(predict = svm.rad$fitted, truth = dat.train$y)
+```
+
+La tasa de error es 1/(1 + 45 + 33) = **1.26**, mucho más que los otros 2 núcleos.
+
+Compare los errores de prueba de los 3 núcleos:
+
+```{r}
+lin.pred <- predict(svm.lin, dat.test)
+table(predict = lin.pred, truth = dat.test$y)
+```
+
+```{r}
+poly.pred <- predict(svm.poly, dat.test)
+table(predict = poly.pred, truth = dat.test$y)
+```
+
+```{r}
+rad.pred <- predict(svm.rad, dat.test)
+table(predict = rad.pred, truth = dat.test$y)
+```
+
+La tasa de error de prueba para kernel lineal, polinomial (con grado predeterminado: 3) y radial es: **35%, 35% y 0 respectivamente**.
+
+
+### 6. Al final de la sección 9.6.1, se afirma que en el caso de datos que apenas se pueden separar linealmente, un clasificador de vectores de apoyo con un pequeño valor de cost que clasifica erróneamente un par de observaciones de entrenamiento puede funcionar mejor en los datos de prueba que uno con un enorme valor de cost que no clasifica erróneamente ninguna observación de entrenamiento. Ahora investiga esta afirmación.
+
+**(a)** Genera datos de dos clases con p = 2 de tal manera que las clases son apenas lineales separables.
+
+```{r}
+set.seed(1)
+x.one <- runif(500, 0, 90)
+y.one <- runif(500, x.one + 10, 100)
+x.one.noise <- runif(50, 20, 80)
+y.one.noise <- 5/4 * (x.one.noise - 10) + 0.1
+
+x.zero <- runif(500, 10, 100)
+y.zero <- runif(500, 0, x.zero - 10)
+x.zero.noise <- runif(50, 20, 80)
+y.zero.noise <- 5/4 * (x.zero.noise - 10) - 0.1
+
+class.one <- seq(1, 550)
+x <- c(x.one, x.one.noise, x.zero, x.zero.noise)
+y <- c(y.one, y.one.noise, y.zero, y.zero.noise)
+
+plot(x[class.one], y[class.one], col = "dark green", pch = "+", ylim = c(0, 100))
+points(x[-class.one], y[-class.one], col = "orange", pch = 4)
+```
+
+
+**(b)** Calcula las tasas de error de validación cruzada de los clasificadores de vectores de apoyo con un rango de valores de cost. ¿Cuántos errores de formación se clasifican erróneamente para cada valor de cost considerado, y cómo se relaciona esto con los errores de validación cruzada obtenidos?
+
+```{r warning=FALSE}
+set.seed(2)
+z <- rep(0, 1100)
+z[class.one] <- 1
+data <- data.frame(x = x, y = y, z = as.factor(z))
+tune.out <- tune(svm, z ~ ., data = data, kernel = "linear", ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100, 1000, 10000)))
+summary(tune.out)
+```
+**La opción de 10,000 es la mejor opción de parámetro**
+
+```{r}
+data.frame(cost = tune.out$performance$cost, misclass = tune.out$performance$error * 1100)
+```
+**10,000 clasifica todos los puntos correctatamente**
+
+**(c)** Genera un conjunto de datos de prueba apropiado y calcula los errores de prueba correspondientes a cada uno de los valores de cost considerados. ¿Qué valor de cost da lugar a menos errores de prueba y cómo se compara con los valores de cost que dan lugar a menos errores de entrenamiento y menos errores de validación cruzada?
+
+```{r}
+x.test <- runif(1000, 0, 100)
+class.one <- sample(1000, 500)
+y.test <- rep(NA, 1000)
+# Set y > x for class.one
+for (i in class.one) {
+    y.test[i] <- runif(1, x.test[i], 100)
+}
+# set y < x for class.zero
+for (i in setdiff(1:1000, class.one)) {
+    y.test[i] <- runif(1, 0, x.test[i])
+}
+plot(x.test[class.one], y.test[class.one], col = "dark green", pch = "+")
+points(x.test[-class.one], y.test[-class.one], col = "orange", pch = 4)
+```
+
+```{r}
+set.seed(3)
+z.test <- rep(0, 1000)
+z.test[class.one] <- 1
+data.test <- data.frame(x = x.test, y = y.test, z = as.factor(z.test))
+costs <- c(0.01, 0.1, 1, 5, 10, 100, 1000, 10000)
+test.err <- rep(NA, length(costs))
+for (i in 1:length(costs)) {
+    svm.fit <- svm(z ~ ., data = data, kernel = "linear", cost = costs[i])
+    pred <- predict(svm.fit, data.test)
+    test.err[i] <- sum(pred != data.test$z)
+}
+data.frame(cost = costs, misclass = test.err)
+```
+Los costos de 1, 5 o 10 parecen funcionar mejor en las observaciones de prueba, esto es mucho menor que el valor de 10000 para las observaciones de entrenamiento.
+
+
+**(d)** Discuta sus resultados.
+
+Vemos un fenómeno de sobreajuste para el kernel lineal. Un gran costo intenta clasificar correctamente los puntos ruidosos y, por lo tanto, se adapta a los datos de entrenamiento. Sin embargo, un pequeño costo genera algunos errores en los puntos de prueba ruidosos y funciona mejor con los datos de prueba.
+
+### 7. En este problema, se utilizarán enfoques de vectores de apoyo para predecir si un coche determinado tiene un alto o bajo kilometraje de gasolina basándose en el conjunto de datos Auto.
+
+**(a)** Crea una variable binaria que toma un 1 para los coches con kilometraje de gasolina por encima de la mediana, y un 0 para los coches con kilometraje de gasolina por debajo de la mediana.
+
+```{r}
+library(ISLR)
+library(e1071)
+gas.med = median(Auto$mpg)
+new.var = ifelse(Auto$mpg > gas.med, 1, 0)
+Auto$mpglevel = as.factor(new.var)
+```
+
+
+**(b)** Ajusta un clasificador de vectores de apoyo a los datos con varios valores de cost, para predecir si un coche tiene un alto o bajo kilometraje de gasolina. Describe de los errores de validación cruzada asociados a los diferentes valores de este parámetro. Comenta sus resultados.
+
+```{r}
+set.seed(3255)
+Tune.out = tune(svm, mpglevel ~ ., data = Auto, kernel = "linear", ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100)))
+summary(Tune.out)
+```
+
+
+**(c)** Ahora repita (b), esta vez usando SVM con kernels de base radial y polinómica, con diferentes valores de gamma y degree y cost. Comente sus resultados.
+
+```{r}
+set.seed(3255)
+Tune.outpol <- tune(svm, mpglevel ~ ., data = Auto, kernel = "polynomial", ranges = list(cost = c(0.1, 1, 5, 10), degree = c(2, 3, 4)))
+summary(Tune.outpol)
+```
+
+```{r}
+set.seed(3255)
+Tune.outrad = tune(svm, mpglevel ~ ., data = Auto, kernel = "radial", ranges = list(cost = c(0.1, 1, 5, 10), gamma = c(0.01, 0.1, 1, 5, 10, 100)))
+summary(Tune.outrad)
+```
+
+**(d)** Haz algunas gráficas para respaldar tus afirmaciones en b) y c).
+
+Sugerencia: En el laboratorio, usamos la función plot() para los objetos svm sólo en los casos con p=2. Cuando p>2, se puede usar la función plot() para crear gráficos que muestren pares de variables a la vez. Esencialmente, en lugar de escribir
+> plot(svmfit, dat)
+
+donde svmfit contiene su modelo ajustado y dat es un data frame que contiene sus datos, puede escribir:
+> plot(svmfit, dat, x1~x4)
+
+con el fin de gráficar sólo la primera y cuarta variables. Sin embargo, debes reemplazar x1 y x4 con los nombres correctos de las variables. Para saber más, escribe ?plot.svm.
+
+```{r}
+svm.linear = svm(mpglevel ~ ., data = Auto, kernel = "linear", cost = 1)
+svm.poly = svm(mpglevel ~ ., data = Auto, kernel = "polynomial", cost = 10, 
+    degree = 2)
+svm.radial = svm(mpglevel ~ ., data = Auto, kernel = "radial", cost = 10, gamma = 0.01)
+plotpairs = function(fit) {
+    for (name in names(Auto)[!(names(Auto) %in% c("mpg", "mpglevel", "name"))]) {
+        plot(fit, Auto, as.formula(paste("mpg~", name, sep = "")))
+    }
+}
+plotpairs(svm.linear)
+```
+
+```{r}
+plotpairs(svm.poly)
+```
+
+```{r}
+plotpairs(svm.radial)
+```
+
+
+### 8. En el capítulo, mencionamos el uso de la distancia basada en la correlación y la distancia euclidiana como medidas de disimilitud para la agrupación (clusitering) jerárquica. 
+Resulta que estas dos medidas son casi equivalentes: si cada observación se ha centrado para tener una media cero y una desviación estándar uno, y si dejamos que rij denote la correlación entre las observaciones i−th y j−th, entonces la cantidad 1−rij es proporcional a la distancia euclidiana al cuadrado entre las observaciones i−th y j−th. En los datos USArrests, demuestra que esta proporcionalidad se mantiene.
+
+Sugerencia: La distancia euclidiana puede ser calculada usando la función dist(), y las correlaciones pueden ser calculadas usando la función cor().
+
+```{r}
+library(ISLR)
+data("USArrests")
+set.seed(1)
+
+usa.scale <- scale(USArrests)
+
+distance <- dist(usa.scale)
+distance2 <- distance*distance
+
+
+r_ij <- cor(t(usa.scale))
+
+minus.r_ij <- as.dist((1-t(r_ij)))
+
+op <- summary(minus.r_ij/distance2)
+
+op
+```
+
+```{r}
+plot(minus.r_ij/distance2)
+```
+
+
+### 9. En la sección 10.2.3, se dio una fórmula para calcular el PVE en la ecuación 10.8. También vimos que el PVE puede obtenerse usando la salida (output) sdev de la función prcomp(). En los datos de USArrests, calcula el PVE de dos maneras:
+
+**(a)** Utilizando la salida (output) sdev de la función prcomp(), como se hizo en la sección 10.2.3.
+
+```{r}
+data(USArrests)
+USArrests <- scale(USArrests)
+comp.arrests <- prcomp(USArrests)
+comp.var <- comp.arrests$sdev^2
+comp.var
+```
+```{r}
+comp.var/sum(comp.var)
+```
+
+**(b)** Aplicando directamente la ecuación 10.8. Es decir, usar el prcomp() para calcular las cargas de los componentes principales. Luego, use esas cargas en la ecuación 10.8 para obtener el PVE.
+Estos dos enfoques deberían dar los mismos resultados.
+
+Sugerencia: Sólo obtendrá los mismos resultados en a) y b) si se utilizan los mismos datos en ambos casos. Por ejemplo, si en (a) usted realizó prcomp() usando variables centradas y escaladas, entonces debe centrar y escalar las variables antes de aplicar la Ecuación 10.3 en (b).
+
+```{r}
+pr.out <- prcomp(USArrests, scale = TRUE)
+pr.var <- pr.out$sdev^2
+pve <- pr.var / sum(pr.var)
+sum(pr.var)
+```
+```{r}
+pve
+```
+
+```{r}
+dim(comp.arrests$rotation)
+```
+```{r}
+loadings <- pr.out$rotation
+USArrests2 <- scale(USArrests)
+sumvar <- sum(apply(as.matrix(USArrests2)^2, 2, sum))
+apply((as.matrix(USArrests2) %*% loadings)^2, 2, sum) / sumvar
+```
+
+### 10. Considera los datos de USArrests. Ahora realizaremos un agrupamiento (clustering) jerárquico de los estados.
+
+**(a)** Usando la agrupación (clustering) jerárquica con la vinculación completa y la distancia euclidiana, agrupa los estados.
+
+```{r}
+set.seed(1)
+library(ggdendro)
+hclust.mod <- hclust(dist(USArrests), method='complete')
+
+plot(hclust.mod, main='Hierarchical clustering with complete linkage and Euclidean distance')
+```
+
+```{r}
+library(tidyverse)
+ggdendrogram(hclust.mod, segements=TRUE, labels=TRUE, leaf_labels = TRUE, rotate=FALSE, theme_dendro = TRUE) + 
+  labs(title='Hierarchical clustering with complete linkage and Euclidean distance')
+```
+
+
+
+**(b)** Cortar el dendrograma a una altura que resulte en tres grupos (clusters). ¿Qué estados pertenecen a qué grupos (clusters)?
+
+```{r}
+set.seed(1)
+cut3 <- cutree(hclust.mod, 3)
+table(cut3)
+```
+
+```{r}
+cut3
+```
+```{r}
+plot(cut3)
+```
+
+
+**(c)** Agrupa (clustering) jerárquicamente los estados utilizando la vinculación completa y la distancia euclidiana, después de escalar las variables para tener una desviación estándar de uno.
+
+```{r}
+hclust.scale <- scale(USArrests)
+set.seed(1)
+hclust.scale.mod <- hclust(dist(hclust.scale),method='complete')
+
+plot(hclust.scale.mod, main='Hierarchical cluster After scaling variables to 1 SD')
+```
+
+```{r}
+ggdendrogram(hclust.scale.mod, segements=TRUE, labels=TRUE, leaf_labels = TRUE, rotate=FALSE, theme_dendro = TRUE) + 
+  labs(title='Hierarchical cluster After scaling variables to 1 SD')
+```
+
+
+
+**(d)** ¿Qué efecto tiene el escalamiento de las variables en la agrupación (clustering) jerárquica obtenida? En su opinión, ¿deberían escalarse las variables antes de que se calculen las disimilitudes entre observaciones? Proporcione una justificación para su respuesta.
+
+```{r}
+set.seed(1)
+cut.hclust.scale.mod <- cutree(hclust.scale.mod,3)
+table(cut.hclust.scale.mod)
+```
+
+```{r}
+cut.hclust.scale.mod
+```
+
+```{r}
+Non.SD <- cut3
+SD.1 <- cut.hclust.scale.mod
+
+tab <- table(Non.SD, SD.1)
+tab
+```
+
+```{r}
+same <- (tab[1,1] + tab[2,2] + tab[3,3]) / sum(tab)
+cat('Parece ser que el ', same*100,'% de las observaciones estan asignadas a los mismos clusters')
+```
+
+Parece que escalar las variables cambia los grupos, pero también siguen siendo similares. Creo que la escala debería hacerse porque las unidades de medida son muy diferentes.

@@ -1,0 +1,1035 @@
+---
+title: "Tarea 2 Ciencia de Datos"
+author: "Emmanuel Rueda Escalona"
+date: "19/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+<center style="color:black; font-size: 200%">**Problem Set 2**</center> 
+
+## Instrucciones
+
+Siéntase libres de trabajar en grupo mientras resuelve esta tarea. Sin embargo, las entregas sólo se permiten en forma individual. La bandeja de entrega estará disponible en Canvas. Por favor, hagan que sus escritos sean legibles. En particular para las preguntas empíricas, incluyan los resultados estadísticos necesarios para responder a las preguntas. Responda de manera independiente a cada una de las preguntas.
+
+**Puntos totales:100**
+
+# Parte 1 (30 puntos)
+
+#### 1. Utilizando las propiedades estadísticas básicas de la varianza, así como el cálculo de una sola variable, obtenga: 
+
+<center>(5.6) α=$\frac{\ σ^2y−σxy}{σ^2x+σ^2y−2σxy}$</center>
+
+
+En otras palabras, demuestre que α dado por (5.6) de hecho minimiza Var($αx+(1−α)y$)
+
+En primer lugar, usando las propiedades de la varianza podemos descomponer la función 
+
+Var($αX+(1−α)Y$)= Var(αx)+ Var(1-α)(y)+Cov(αx(1-α)(y))
+
+También usando otras propiedades de la varianza podemos sacar el coef α
+
+$α^2σ^2_x$+ $(1-α)^2σ^2_y$+2α(1-α)$σ_{xy}$
+
+Despúes para demostrar que se minimiza, sacamos la primera derivada de la función en términos del coef α, igualamos la función a cero y despejamos alfa.(con esto se prueba que hay un max o min)
+
+$\frac{\ dVar}{dα}$= 2$ασ^2_x$-2$σ^2_y$+2α$σ^2_y$+2$σ_{xy}$-4α$σ_{xy}$
+
+2$ασ^2_x$-2$σ^2_y$+2α$σ^2_y$+2$σ_{xy}$-4α$σ_{xy}$ =0 
+
+α=$\frac{\ σ^2y−σxy}{σ^2x+σ^2y−2σxy}$
+
+Por último para comprobar que es un minimo se tiene que obterner la segunda derivada y anaizar que sea positiva. 
+
+$\frac{\ d^2Var}{dα^2}$= 2$σ^2_x$+2$σ^2_y$-4$σ_{xy}$
+
+2$σ^2_x$+2$σ^2_y$-4$σ_{xy}$$\geq0$ 
+
+Usando las propiedades de la varianza podemos simplificar la expresión 
+
+Si **2Var(X−Y)≥0** entonces será un mínimo.
+
+
+#### 2. Ahora deduciremos la probabilidad de que una observación dada sea parte de una muestra de bootstrap. Supongamos que obtenemos una muestra de bootstrap de un conjunto de observaciones.
+
+**a)** ¿Cuál es la probabilidad de que la primera observación de bootstrap no sea la observación número j de la muestra original?
+
+P=1−$\frac{\ 1}{n}$
+
+**b)** ¿Cuál es la probabilidad de que la segunda observación de arranque no sea la j-ésima observación de la muestra original?
+
+P=1−$\frac{\ 1}{n}$
+
+**c)** Argumenta que la probabilidad de que la j-ésima observación no esté en la muestra de arranque es $(1−1/n)^n$.
+
+De acuerdo a la fórmula de bootstrap con **reemplazo**, la probabilidad de que la j-ésima observación no esté en la muestra bootstrap ($(1−1/n)$) es el producto de las probabilidades de que cada observación bootstrap no sea la j-ésima observación de la muestra original $(1−1/n)_1$x$(1−1/n)_2$x...$(1−1/n)_n$= $(1−1/n)^n$
+
+**d)** Cuando n=5, ¿cuál es la probabilidad de que la observación número 10 esté en la muestra de arranque?
+
+P(de jth observaciones en la muestra de bootstrap)= 1−$(1−\frac{\ 1}{5})^5$=**0.672**.
+ 
+
+**e)** Cuando n=100, ¿cuál es la probabilidad de que la enésima observación esté en la muestra de arranque?
+
+P(de jth observaciones en la muestra de bootstrap)= 1−$(1−\frac{\ 1}{100})^{100}$=**0.634**
+
+**f)** Cuando n=10,000, ¿cuál es la probabilidad de que la observación número 10 esté en la muestra de bootstrap?
+
+P(de jth observaciones en la muestra de bootstrap)= 1−$(1−\frac{\ 1}{10000})^{10000}$=**0.632**
+
+**g)** Cree una gráfica que muestre, para cada valor entero de 1 a 100,000, la probabilidad de que la enésima observación esté en la muestra de arranque. Comenta sobre lo que observas.
+
+```{r}
+x <- 1:100000
+plot(x, 1 - (1 - 1/x)^x)
+```
+
+
+**R=** La gráfica muestra que se estabiliza rapidamente desde valores pequeños de x en 0.63 posiblemente por la cercanía a una asíntota.
+
+**h)** Ahora investigaremos numéricamente la probabilidad de que una muestra bootstrap de arranque de n=100 contenga la enésima observación. Aquí j = 4. Creamos repetidamente muestras de bootstrap, y cada vez que registramos si la cuarta observación está contenida o no en la muestra de bootstrap. Comenta el resultado obtenido
+
+```{r}
+store <- rep(NA, 10000)
+for (i in 1:10000) {
+    store[i] <- sum(sample(1:100, rep = TRUE) == 4) > 0
+}
+mean(store)
+```
+
+
+#### 3. Realizamos la mejor selección de subconjunto, avance hacia adelante y hacia atrás en un solo conjunto de datos. Para cada enfoque, obtenemos modelos p+1, que contienen 0,1,2, ..., predictores. Explica tus respuestas:
+
+**a.**¿Cuál de los tres modelos con k predictors tiene el RSS de entrenamiento más pequeño?
+
+Al realizar la  selección del mejor subconjunto, el modelo con el mayor número de  predictores  (k) es el modelo con el RSS más pequeño entre todos los modelos Ckp con k predictores. Al realizar la selección por pasos hacia adelante, el modelo con k predictores es el modelo con el menor RSS entre los modelos p − k que aumentan los predictores en Mk − 1 con un predictor adicional. Al realizar la selección por pasos hacia atrás, el modelo con k predictores es el modelo con el menor RSS entre los k modelos que contiene todos menos uno de los predictores en Mk + 1. Entonces, el modelo con k predictores que tiene el menor error de entrenamiento de RSS es el que se obtiene de la  selección del mejor subconjunto, ya que es el que se selecciona entre todos los modelos de k predictores debido a que el RSS favorece al que tiene mayor p, es decir k.
+
+**b.**¿Cuál de los tres modelos con predictores k tiene el RSS más pequeño?
+
+**R:**Difícil saberlo ya que la  selección del mejor subconjunto es la prueba RSS más pequeña porque tiene en cuenta más variables que los otros métodos. Sin embargo,los otros métodos también pueden elegir eñ modelo con la RSS de prueba más pequeño coincidencia.
+
+**c.** Verdadero o Falso
+
+**-i.** Los predictores en el modelo de variable k identificados por avance gradual son un subconjunto de los predictores en el modelo de variable (k+1) identificado por selección progresiva.
+
+**Verdadero.** El modelo con (k + 1) predictores se obtiene aumentando los predictores en el modelo con k predictores con un predictor adicional.
+
+**-ii.** Los predictores en el modelo de variable k identificados por pasos hacia atrás son un subconjunto de los predictores en el modelo variable (k+1) identificado por selección gradual hacia atrás.
+
+**Verdadero.** El modelo con k predictores se obtiene eliminando un predictor del modelo con (k + 1) predictores.
+
+**-iii.** Los predictores en el modelo de variable k identificados por pasos hacia atrás son un subconjunto de los predictores en el modelo variable (k+1) identificado por selección progresiva.
+
+**Falso.** No existe un vínculo directo entre los modelos obtenidos de la selección hacia adelante y hacia atrás.
+
+**-iv.** Los predictores en el modelo de variable k identificados por un avance gradual son un subconjunto de los predictores en el modelo variable (k+1) identificado por selección hacia atrás paso a paso.
+
+**Falso.** No existe un vínculo directo entre los modelos obtenidos de la selección hacia adelante y hacia atrás.
+
+**-v.** Los predictores en el modelo de variable k identificados por el mejor subconjunto son un subconjunto de los predictores en el modelo de variable (k+1) identificado por la mejor selección de subconjunto.
+
+**Falso.** El modelo con predictores (k + 1) se obtiene seleccionando entre todos los modelos posibles con predictores (k + 1), por lo que no necesariamente contiene todos los predictores seleccionados para el modelo de variables k.
+
+# Parte 2 (70 puntos)
+
+#### 4.- Utilizamos la regresión logística para predecir la probabilidad de incumplimiento utilizando los ingresos y el equilibrio en el conjunto de datos predeterminados.
+
+Ahora estimaremos el error de prueba de este modelo de regresión logística utilizando el enfoque de conjunto de validación. No olvide establecer una semilla aleatoria antes de comenzar su análisis.
+
+**a.** Ajuste un modelo de regresión logística que use el ingreso y el equilibrio del defecto predeterminado.
+
+```{r}
+library(ISLR)
+summary(Default)
+attach(Default)
+
+glm.fit <- glm(default ~ income + balance, data = Default, family = binomial)
+```
+
+
+**b.** Utilizando el enfoque de conjunto de validación, calcule el error de prueba de este modelo. Para hacer esto, debe realizar los siguientes pasos:
+
+**-i.**  Divida el conjunto de muestra en un conjunto de entrenamiento y un conjunto de validación.
+
+```{r}
+set.seed(1)
+train <- sample(dim(Default)[1], dim(Default)[1]/2)
+```
+
+
+**-ii)** Ajuste un modelo de regresión logística múltiple utilizando solo las observaciones de entrenamiento.
+
+```{r}
+glm.fit <- glm(default ~ income + balance, data = Default, family = binomial, subset = train)
+```
+
+
+**-iii)** Obtenga una predicción del estado predeterminado para cada individuo en el conjunto de validación calculando la probabilidad posterior de incumplimiento para ese individuo y clasificando al individuo en la categoría predeterminada si la probabilidad posterior es mayor que 0.5.
+
+```{r}
+glm.pred <- rep("No", dim(Default)[1]/2)
+glm.probs <- predict(glm.fit, Default[-train, ], type = "response") 
+glm.pred[glm.probs > 0.5] = "Yes"
+```
+
+
+**-iv.** Calcule el error del conjunto de validación, que es la fracción de las observaciones en el conjunto de validación que están mal clasificadas.
+
+```{r}
+mean(glm.pred != Default[-train, ]$default)
+```
+
+
+**c.** Repita el proceso en (b) tres veces, utilizando tres divisiones diferentes de las observaciones en un conjunto de entrenamiento y un conjunto de validación. Comentario sobre los resultados obtenidos.
+
+```{r}
+ErrorV <- function() {
+        train <- sample(dim(Default)[1], dim(Default)[1]/2)
+        glm.fit <- glm(default ~ income + balance, data = Default, family = binomial, 
+        subset = train)
+        glm.pred <- rep("No", dim(Default)[1]/2)
+        glm.probs <- predict(glm.fit, Default[-train, ], type = "response")
+        glm.pred[glm.probs > 0.5] = "Yes"
+        return(mean(glm.pred != Default[-train, ]$default))
+}
+ErrorV()
+ErrorV()
+ErrorV()
+```
+
+
+**La media de la tasa de error de prueba es de 2.6%.**
+
+**d.** Considere ahora un modelo de regresión logística que predice la capacidad probable de utilizar de manera predeterminada el ingreso, el equilibrio y una variable ficticia para el alumno. Estime el error de prueba para este modelo utilizando el enfoque de conjunto de validación. Comente si incluir o no la variable ficticia para estudiantes conduce a una reducción en la tasa de error de la prueba.
+
+```{r}
+train <- sample(dim(Default)[1], dim(Default)[1]/2)
+glm.fit <- glm(default ~ income + balance + student, data = Default, family = binomial, subset = train)
+glm.pred <- rep("No", dim(Default)[1]/2)
+glm.probs <- predict(glm.fit, Default[-train, ], type = "response")
+glm.pred[glm.probs > 0.5] = "Yes"
+mean(glm.pred != Default[-train, ]$default)
+```
+**Hay 2.7% de tasa de error en la prueba, con la variable ficticia de estudiante. Usando el enfoque del conjunto de validación, no parece que agregar la variable simulada de estudiante lleve a una reducción significativa en la tasa de error de la prueba**
+
+#### 5. Continuamos considerando el uso de un modelo de regresión logística para predecir la probabilidad de usar de manera predeterminada los ingresos y el equilibrio en el conjunto de datos predeterminados. En particular, ahora calcularemos las estimaciones para los errores estándar de los coeficientes de regresión logística de ingresos y balance de dos maneras diferentes: (1) usando el bootstrap, y (2) usando la fórmula estándar para calcular los errores estándar en la función glm (). No olvide establecer una semilla aleatoria antes de comenzar su análisis.
+
+**a.** Utilizando las funciones summary () y glm (), determine los errores estándar estimados para los coeficientes asociados con el ingreso y el equilibrio en un modelo de regresión logística múltiple que utiliza ambos predictores.
+
+```{r}
+set.seed(1)
+attach(Default)
+```
+
+```{r}
+fit.glm <- glm(default ~ income + balance, data = Default, family = "binomial")
+summary(fit.glm)
+```
+
+**R:**Las estimaciones glm () de los errores estándar son: 
+
+
+1)para el coeficiente β0: 4.348$e^{-1}$
+
+2)para el coeficiente β1: 4.985$e^{-6}$
+
+3)para el coeficiente β2: 2.274$e^{-4}$.
+
+**b.** Escriba una función, boot.fn (), que tome como entrada el conjunto de datos predeterminados, así como un índice de las observaciones, y que genere las estimaciones de coeficientes para el ingreso y el equilibrio en el modelo de regresión logística múltiple.
+
+```{r}
+boot.fn <- function(data, index) {
+    fit <- glm(default ~ income + balance, data = data, family = "binomial", subset = index)
+    return (coef(fit))
+}
+```
+
+
+**c.** Use la función boot () junto con la función boot.fn () para estimar los errores estándar de los coeficientes de regresión logística para el ingreso y el equilibrio.
+
+```{r}
+library(boot)
+boot(Default, boot.fn, 1000)
+```
+
+**R:**Las estimaciones bootstrap de los errores estándar son: 
+
+1)para el coeficiente β0: 4.344$e^{-1}$
+
+2)para el coeficiente β1: 4.866$e^{-6}$
+
+3)para el coeficiente β2: 2.298$e^{-4}$
+
+
+**d.** Comente los errores estándar estimados obtenidos usando la función glm () y la función bootstrap.
+
+
+**R:**Los errores estándar estimados obtenidos por los dos métodos están bastante cerca.
+
+#### 6. Ahora realizaremos la validación cruzada en un conjunto de datos simulados.
+
+**a.** Genere un conjunto de datos simulados de la siguiente manera:
+
+set.seed(1)
+x=rnorm(100)
+y=x-2*x^2+rnorm(100)
+
+```{r}
+set.seed(1)
+y <- rnorm(100)
+x <- rnorm(100)
+y <- x-2 * x^2 + rnorm(100)
+```
+
+
+En este conjunto de datos, ¿qué es n y qué es p? Escriba el modelo utilizado para generar los datos en forma de ecuación.
+
+N son las observaciones de la muestra y es n = 100 y p son el número de predictores que es p = 2, el modelo utilizado es
+
+<center>$Y=X−2X^2+ε.$</center>
+
+**b.** Crear un diagrama de dispersión de X contra Y. Comenta lo que encuentres.
+
+```{r}
+plot(x, y)
+```
+
+**R:**Los datos sugieren una clase de relación curva o similar.
+
+**c.** Establezca una semilla aleatoria y luego calcule los errores de LOOCV que resultan de ajustar los siguientes cuatro modelos usando mínimos cuadrados:
+i. Y= $β_0+β_1X+ε$
+
+```{r}
+library(boot)
+set.seed(1)
+Data <- data.frame(x, y)
+fit.glm.1 <- glm(y ~ x)
+cv.glm(Data, fit.glm.1)$delta[1]
+```
+
+
+ii.Y= $β_0+β_1X+β_2X^2+ε$
+
+```{r}
+fit.glm.2 <- glm(y ~ poly(x, 2))
+cv.glm(Data, fit.glm.2)$delta[1]
+```
+
+
+iii.Y=$β_0+β_1X+β_2X^2+β_3X^3+ε$
+
+```{r}
+fit.glm.3 <- glm(y ~ poly(x, 3))
+cv.glm(Data, fit.glm.3)$delta[1]
+```
+
+
+iv.Y=$β_0+β_1X+β_2X^2+β_3X^3+β_4X^4+ε$
+
+```{r}
+fit.glm.4 <- glm(y ~ poly(x, 4))
+cv.glm(Data, fit.glm.4)$delta[1]
+```
+
+
+Tenga en cuenta que puede resultarle útil utilizar la función data.frame () para crear un único conjunto de datos que contenga ambos X e Y.
+
+**d.** Repita (c) usando otra semilla aleatoria e informe sus resultados. ¿Son los mismos resultados que obtuvo en (c)? ¿Por qué?
+
+```{r}
+set.seed(10)
+fit.glm.1 <- glm(y ~ x)
+cv.glm(Data, fit.glm.1)$delta[1]
+```
+```{r}
+fit.glm.2 <- glm(y ~ poly(x, 2))
+cv.glm(Data, fit.glm.2)$delta[1]
+```
+```{r}
+fit.glm.3 <- glm(y ~ poly(x, 3))
+cv.glm(Data, fit.glm.3)$delta[1]
+```
+```{r}
+fit.glm.4 <- glm(y ~ poly(x, 4))
+cv.glm(Data, fit.glm.4)$delta[1]
+```
+**R:**Los resultados anteriores son idénticos a los resultados obtenidos en (c) ya que LOOCV se evaluó en pliegues de una sola observación.
+
+
+**e.** ¿Cuál de los modelos en (c) tuvo el error LOOCV más pequeño? ¿Es esto lo que esperabas? Explica tu respuesta.
+
+**R:**Podemos ver que la estimación de LOOCV para la prueba MSE es mínima para "fit.glm.2", esto no es sorprendente ya que vimos claramente en (b) que la relación entre "x" e "y" es cuadrática.
+
+**f.** Comente sobre la significación estadística de las estimaciones de coeficientes que resultan de ajustar cada uno de los modelos en (c) utilizando mínimos cuadrados. ¿Están estos resultados de acuerdo con las conclusiones extraídas basadas en los resultados de validación cruzada?
+
+```{r}
+summary(fit.glm.4)
+```
+**R:**Los valores p muestran que los términos lineales y cuadráticos son estadísticamente significativos y que los términos cúbico y de cuarto grado no son estadísticamente significativos. Esto concuerda fuertemente con nuestros resultados de validación cruzada que fueron mínimos para el modelo cuadrático.
+
+#### 7. En este ejercicio, generaremos datos simulados y luego los utilizaremos para realizar la mejor selección de subconjuntos.
+
+**a.**Utilice la función rnorm () para generar un predictor X de longitud n=100, así como un vector de ruido ε de longitud n=100.
+
+```{r}
+set.seed(1)
+X <- rnorm(100)
+eps <- rnorm(100)
+```
+
+
+**b.** Genere un vector de respuesta Y de longitud n=100 según el modelo:
+Y=$β_0+β_1X+β_2X^2+β_3X^3+ε$
+
+Donde β0,β1, β2, y β3 son constantes de tu elección.
+
+```{r}
+b0=5
+b1=10
+b2=-3
+b3=2
+Y <- 5 + 10*X - 3*X^2 + 2*X^3 + eps
+plot(X,Y)
+```
+
+
+**c.**Utilice la función regsubsets () para realizar la mejor selección de subconjuntos para elegir el mejor modelo que contenga los predictores X,X2,...,X10. ¿Cuál es el mejor modelo obtenido de acuerdo con Cp, BIC, y R2 ajustado? Muestre algunas gráficas para proporcionar evidencia de su respuesta e informe los coeficientes del mejor modelo obtenido. Tenga en cuenta que deberá usar la función data.frame () para crear un único conjunto de datos que contenga ambos X y Y
+
+```{r}
+require(leaps)
+regfit.full <- regsubsets(Y~poly(X,10,raw=T), data=data.frame(Y,X), nvmax=10)
+reg.summary <- summary(regfit.full)
+
+par(mfrow=c(3,1))
+
+min.cp <- which.min(reg.summary$cp)  
+plot(reg.summary$cp, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto Cp", type="l")
+points(min.cp, reg.summary$cp[min.cp], col="red", pch=4, lwd=5)
+
+min.bic <- which.min(reg.summary$bic)  
+plot(reg.summary$bic, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto BIC", type="l")
+points(min.bic, reg.summary$bic[min.bic], col="red", pch=4, lwd=5)
+
+min.adjr2 <- which.max(reg.summary$adjr2)  
+plot(reg.summary$adjr2, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto de R^2 Ajustada", type="l")
+points(min.adjr2, reg.summary$adjr2[min.adjr2], col="red", pch=4, lwd=5)
+```
+
+
+El mejor modelo de acuerdo con Cp, es el que tiene 4 parámetros.
+El mejor modelo de acuerdo con BIC, es el que tiene 3 parámetros.
+El mejor modelo de acuerdo con R2 ajustada, es el que tiene 4 parámetros.
+
+```{r}
+coef(regfit.full, min.cp)
+coef(regfit.full, min.bic)
+coef(regfit.full, min.adjr2)
+```
+
+```{r}
+predict.regsubsets =function(object ,newdata ,id ,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form ,newdata )
+  coefi =coef(object ,id=id)
+  xvars =names(coefi )
+  mat[,xvars ]%*% coefi
+}
+```
+
+**Validación cruzada** 
+
+```{r}
+set.seed(1)
+datos <- data.frame(Y,X)
+train=sample (c(TRUE ,FALSE), nrow(datos),rep=TRUE)
+test = !train
+
+regfit.best=regsubsets (Y~poly(X,10,raw=T),data=datos[train ,],
+nvmax =10)
+
+test.mat=stats::model.matrix(Y~poly(X,10,raw=T),data=datos[test,])
+
+val.errors =rep(NA,10)
+for(i in 1:10){
+  coefi=coef(regfit.best,id=i)
+  pred=(test.mat[,names(coefi)])%*%coefi
+  val.errors[i]= mean((datos$Y[test]-pred)^2)
+}
+plot(val.errors)
+min.cverr=which.min(val.errors)
+points(min.cverr,val.errors[min.cverr],col="red", pch=4, lwd=5)
+coef(regfit.best,id=5)
+```
+
+**R:** El mejor modelo es el de 5 predictores
+
+**Validación por capas** 
+```{r}
+k=10
+set.seed (1)
+folds=sample(1:k,nrow(datos),replace =TRUE)
+cv.errors =matrix (NA ,k,10, dimnames =list(NULL,paste(1:10)))
+
+predict.regsubsets =function(object ,newdata ,id ,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form ,newdata )
+  coefi =coef(object ,id=id)
+  xvars =names(coefi )
+  mat[,xvars ]%*% coefi
+}
+```
+
+```{r}
+for(j in 1:k){
+  best.fit =regsubsets (Y~poly(X,10,raw=T),data=datos[folds!=j,],nvmax =10)
+  for(i in 1:10) {
+    pred=predict.regsubsets(best.fit,datos[folds==j,],id=i)
+    cv.errors[j,i]=mean( (datos$Y[folds==j]-pred)^2)
+    }
+  }
+```
+
+```{r}
+mean.cv.errors =apply(cv.errors ,2, mean)
+mean.cv.errors
+par(mfrow =c(1,1))
+plot(mean.cv.errors,type="b")
+min.meancverr=which.min(mean.cv.errors)
+points(min.meancverr,mean.cv.errors[min.meancverr],col="red", pch=4, lwd=5)
+coef(best.fit,id=4)
+```
+
+**R:**El modelo 4 es el que presenta mejor ajuste conforme al procedimiento de validación cruzada por folds
+
+
+**d.** Repita (c), usando la selección por pasos hacia adelante y también usando la selección por pasos hacia atrás. ¿Cómo se compara su respuesta con los resultados en (c)?
+
+```{r}
+regfit.full <- regsubsets(Y~poly(X,10,raw=T), data=data.frame(Y,X), nvmax=10,method = "forward")
+reg.summary <- summary(regfit.full)
+
+par(mfrow=c(3,1))
+
+min.cp <- which.min(reg.summary$cp)  
+plot(reg.summary$cp, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto Cp", type="l")
+points(min.cp, reg.summary$cp[min.cp], col="red", pch=4, lwd=5)
+
+min.bic <- which.min(reg.summary$bic)  
+plot(reg.summary$bic, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto BIC", type="l")
+points(min.bic, reg.summary$bic[min.bic], col="red", pch=4, lwd=5)
+
+min.adjr2 <- which.max(reg.summary$adjr2)  
+plot(reg.summary$adjr2, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto de R^2 Ajustada", type="l")
+points(min.adjr2, reg.summary$adjr2[min.adjr2], col="red", pch=4, lwd=5)
+```
+
+**R:**En este caso, con relación a los resultados en c) son los mismos:
+
+El mejor modelo de acuerdo con Cp, es el de 4 parámetros.
+El mejor modelo de acuerdo con BIC, es el de 3 parámetros.
+El mejor modelo de acuerdo con R2 ajustada, es el de 4 parámetros.
+
+```{r}
+coef(regfit.full, min.cp)
+coef(regfit.full, min.bic)
+coef(regfit.full, min.adjr2)
+```
+
+```{r}
+regfit.full <- regsubsets(Y~poly(X,10,raw=T), data=data.frame(Y,X), nvmax=10,method = "backward")
+reg.summary <- summary(regfit.full)
+
+par(mfrow=c(3,1))
+
+min.cp <- which.min(reg.summary$cp)  
+plot(reg.summary$cp, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto Cp", type="l")
+points(min.cp, reg.summary$cp[min.cp], col="red", pch=4, lwd=5)
+
+min.bic <- which.min(reg.summary$bic)  
+plot(reg.summary$bic, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto BIC", type="l")
+points(min.bic, reg.summary$bic[min.bic], col="red", pch=4, lwd=5)
+
+min.adjr2 <- which.max(reg.summary$adjr2)  
+plot(reg.summary$adjr2, xlab="Número de Parámetros(X)", ylab="Mejor Subconjunto de R^2 Ajustada", type="l")
+points(min.adjr2, reg.summary$adjr2[min.adjr2], col="red", pch=4, lwd=5)
+
+coef(regfit.full, min.cp)
+coef(regfit.full, min.bic)
+coef(regfit.full, min.adjr2)
+```
+
+**R:**En este caso, con relación a los resultados en c) son los mismos:
+
+El mejor modelo de acuerdo con Cp, es el de 4 parámetros.
+El mejor modelo de acuerdo con BIC, es el de 3 parámetros.
+El mejor modelo de acuerdo con R2 ajustada, es el de 4 parámetros.
+
+**Validación cruzada hacia adelante**
+
+```{r}
+set.seed(1)
+datos <- data.frame(Y,X)
+train=sample (c(TRUE ,FALSE), nrow(datos),rep=TRUE)
+test = !train
+
+regfit.best=regsubsets (Y~poly(X,10,raw=T),data=datos[train ,],
+nvmax =10,method="forward")
+
+test.mat=stats::model.matrix(Y~poly(X,10,raw=T),data=datos[test,])
+
+val.errors =rep(NA,10)
+for(i in 1:10){
+  coefi=coef(regfit.best,id=i)
+  pred=(test.mat[,names(coefi)])%*%coefi
+  val.errors[i]= mean((datos$Y[test]-pred)^2)
+}
+plot(val.errors)
+min.cverr=which.min(val.errors)
+points(min.cverr,val.errors[min.cverr],col="red", pch=4, lwd=5)
+coef(regfit.best,id=5)
+
+```
+
+**R:**Indica que el mejor modelo es el que tiene 4 predictores
+
+**Validación por capas**
+
+```{r}
+k=10
+set.seed (1)
+folds=sample(1:k,nrow(datos),replace =TRUE)
+cv.errors =matrix (NA ,k,10, dimnames =list(NULL,paste(1:10)))
+
+predict.regsubsets =function(object ,newdata ,id ,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form ,newdata )
+  coefi =coef(object ,id=id)
+  xvars =names(coefi )
+  mat[,xvars ]%*% coefi
+}
+```
+
+```{r}
+for(j in 1:k){
+  best.fit =regsubsets (Y~poly(X,10,raw=T),data=datos[folds!=j,],nvmax =10, method = "forward")
+  for(i in 1:10) {
+    pred=predict.regsubsets(best.fit,datos[folds==j,],id=i)
+    cv.errors[j,i]=mean( (datos$Y[folds==j]-pred)^2)
+    }
+  }
+```
+
+```{r}
+mean.cv.errors =apply(cv.errors ,2, mean)
+mean.cv.errors
+par(mfrow =c(1,1))
+plot(mean.cv.errors,type="b")
+min.meancverr=which.min(mean.cv.errors)
+points(min.meancverr,mean.cv.errors[min.meancverr],col="red", pch=4, lwd=5)
+coef(best.fit,id=4)
+```
+
+**R:** El modelo 4 es el que presenta mejor ajuste de acuerdo con el procedimiento de validación cruzada por folds
+
+**Validación cruzada hacia atrás**
+
+```{r}
+set.seed(1)
+datos <- data.frame(Y,X)
+train=sample (c(TRUE ,FALSE), nrow(datos),rep=TRUE)
+test = !train
+
+regfit.best=regsubsets (Y~poly(X,10,raw=T),data=datos[train ,],
+nvmax =10,method="backward")
+
+test.mat=stats::model.matrix(Y~poly(X,10,raw=T),data=datos[test,])
+
+val.errors =rep(NA,10)
+for(i in 1:10){
+  coefi=coef(regfit.best,id=i)
+  pred=(test.mat[,names(coefi)])%*%coefi
+  val.errors[i]= mean((datos$Y[test]-pred)^2)
+}
+plot(val.errors)
+min.cverr=which.min(val.errors)
+points(min.cverr,val.errors[min.cverr],col="red", pch=4, lwd=5)
+coef(regfit.best,id=5)
+```
+
+**R:**El mejor modelo es el que tiene 4 predictores, aunque los coeficientes no son tan parecidos a los del modelo teórico
+
+**Validación por capas**
+
+```{r}
+k=10
+set.seed (1)
+folds=sample(1:k,nrow(datos),replace =TRUE)
+cv.errors =matrix (NA ,k,10, dimnames =list(NULL,paste(1:10)))
+
+predict.regsubsets =function(object ,newdata ,id ,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form ,newdata )
+  coefi =coef(object ,id=id)
+  xvars =names(coefi )
+  mat[,xvars ]%*% coefi
+}
+```
+
+```{r}
+for(j in 1:k){
+  best.fit =regsubsets (Y~poly(X,10,raw=T),data=datos[folds!=j,],nvmax =10, method = "backward")
+  for(i in 1:10) {
+    pred=predict.regsubsets(best.fit,datos[folds==j,],id=i)
+    cv.errors[j,i]=mean( (datos$Y[folds==j]-pred)^2)
+    }
+  }
+```
+
+```{r}
+mean.cv.errors =apply(cv.errors ,2, mean)
+mean.cv.errors
+par(mfrow =c(1,1))
+plot(mean.cv.errors,type="b")
+min.meancverr=which.min(mean.cv.errors)
+points(min.meancverr,mean.cv.errors[min.meancverr],col="red", pch=4, lwd=5)
+coef(best.fit,id=4)
+```
+
+**R:**Entonces, el modelo 4 es el que presenta mejor ajuste de acuerdo con el procedimiento de validación cruzada por folds y los coeficientes son parecidos a los del modelo teórico
+
+En general son muy aprecidos los resultados con c)
+
+**e.** Ahora ajuste un modelo de lasso a los datos simulados, nuevamente utilizando predictores X,X2,...,X10. Utilice la validación cruzada para seleccionar el valor óptimo de λ. Cree trazados del error de validación cruzada como una función de λ. Informe los coeficientes estimados resultantes y discuta los resultados obtenidos.
+
+```{r}
+require(glmnet)
+xmat <- model.matrix(Y~poly(X,10,raw=T))[,-1]
+lasso.mod <- cv.glmnet(xmat, Y, alpha=1)
+(lambda <- lasso.mod$lambda.min)
+par(mfrow=c(1,1))
+plot(lasso.mod)
+predict(lasso.mod, s=lambda, type="coefficients")
+```
+
+Los coeficientes obtenidos se parecen a los del modelo teórico.
+
+El modelo Lasso seleccionó como mejores predictores: $X$, $X^2$ and $X^3$. Aunque selecciona $X^5$ y $X^7$, sus coeficientes son muy pequeños. 
+
+**f.** Ahora genere un vector de respuesta de acuerdo con el modelo:
+Y=$β_0+β_7X^7+ε$
+y realizar la mejor selección de subconjunto y el lasso. Discutir los resultados obtenidos.
+
+```{r}
+Y2 <- 5 + 1.5*X^7 + eps
+
+# best subset model selection
+regfit.full <- regsubsets(Y2~poly(X,10,raw=T), data=data.frame(Y,X), nvmax=10)
+par(mfrow=c(3,1))
+(reg.summary <- summary(regfit.full))
+min.cp <- which.min(reg.summary$cp)  
+plot(reg.summary$cp, xlab="Number of Poly(X)", ylab="Best Subset Cp", type="l")
+points(min.cp, reg.summary$cp[min.cp], col="red", pch=4, lwd=5)
+min.bic <- which.min(reg.summary$bic)  
+plot(reg.summary$bic, xlab="Number of Poly(X)", ylab="Best Subset BIC", type="l")
+points(min.bic, reg.summary$bic[min.bic], col="red", pch=4, lwd=5)
+min.adjr2 <- which.max(reg.summary$adjr2)  
+plot(reg.summary$adjr2, xlab="Number of Poly(X)", ylab="Best Subset Adjusted R^2", type="l")
+points(min.adjr2, reg.summary$adjr2[min.adjr2], col="red", pch=4, lwd=5)
+coef(regfit.full, min.cp)
+coef(regfit.full, min.bic)
+coef(regfit.full, min.adjr2)
+
+# lasso regression 
+xmat <- model.matrix(Y2~poly(X,10,raw=T))[,-1]
+lasso.mod <- cv.glmnet(xmat, Y2, alpha=1)
+(lambda <- lasso.mod$lambda.min)
+par(mfrow=c(1,1))
+plot(lasso.mod)
+predict(lasso.mod, s=lambda, type="coefficients")
+```
+
+El modelo Lasso selecciona el modelo más parecido al teórico, ya que la selección del mejor subconjunto diagnóstica el uso de 2 predictores mediante Cp, 1 predictor mediante BIC y 4 predictores mediante $R^2$. 
+
+Los coeficiente no son tan parecidos a cero como en el caso anterior.
+
+#### 8. En este ejercicio, pronosticaremos el número de aplicaciones recibidas utilizando las otras variables en el conjunto de datos recopilados. Base de datos Collage
+
+**a.** Divida el conjunto de datos en un conjunto de entrenamiento y un conjunto de prueba.
+
+```{r}
+library(ISLR)
+data(College)
+set.seed(11)
+train <- sample(dim(College)[1], dim(College)[1]/2)
+test <- -train
+College.train <- College[train, ]
+College.test <- College[test, ]
+```
+
+
+**b.** Ajuste un modelo lineal utilizando mínimos cuadrados en el conjunto de entrenamiento e informe el error de prueba obtenido.
+
+```{r}
+fit.lm <- lm(Apps ~ ., data = College.train)
+pred.lm <- predict(fit.lm, College.test)
+mean((pred.lm - College.test$Apps)^2)
+```
+**R:** El MSE de prueba es $1.026096^{6}$.
+
+**c.** Ajuste un modelo de regresión de cresta en el conjunto de entrenamiento, con λ elegido por validación cruzada. Informe el error de prueba obtenido.
+
+```{r}
+train.mat <- model.matrix(Apps ~ ., data = College.train)
+test.mat <- model.matrix(Apps ~ ., data = College.test)
+grid <- 10 ^ seq(4, -2, length = 100)
+fit.ridge <- glmnet(train.mat, College.train$Apps, alpha = 0, lambda = grid, thresh = 1e-12)
+cv.ridge <- cv.glmnet(train.mat, College.train$Apps, alpha = 0, lambda = grid, thresh = 1e-12)
+bestlam.ridge <- cv.ridge$lambda.min
+bestlam.ridge
+```
+
+```{r}
+pred.ridge <- predict(fit.ridge, s = bestlam.ridge, newx = test.mat)
+mean((pred.ridge - College.test$Apps)^2)
+```
+
+**R:** El MSE del error de prueba de la regresión de crestas  es de $1.026069^{6}$. Un poco más chico que el de mínimos cuadrados
+
+**d.** Ajustar un modelo de lasso en el conjunto de entrenamiento, con λ elegido por validación cruzada. Informe el error de prueba obtenido, junto con el número de estimaciones de coeficientes distintos de cero.
+
+```{r}
+fit.lasso <- glmnet(train.mat, College.train$Apps, alpha = 1, lambda = grid, thresh = 1e-12)
+cv.lasso <- cv.glmnet(train.mat, College.train$Apps, alpha = 1, lambda = grid, thresh = 1e-12)
+bestlam.lasso <- cv.lasso$lambda.min
+bestlam.lasso
+```
+```{r}
+pred.lasso <- predict(fit.lasso, s = bestlam.lasso, newx = test.mat)
+mean((pred.lasso - College.test$Apps)^2)
+```
+
+**R:**El MSE del error de prueba de la regresión de Lasso  es de $1.026036^{6}$. Un poco más chico que los dos anteriores
+
+```{r}
+predict(fit.lasso, s = bestlam.lasso, type = "coefficients")
+```
+
+
+**e.** Ajustar un modelo de PCR en el conjunto de entrenamiento, con M elegido por validación cruzada. Informe el error de prueba obtenido, junto con el valor de M seleccionado por validación cruzada.
+
+```{r message=FALSE, warning=FALSE}
+library(pls)
+```
+
+```{r}
+fit.pcr <- pcr(Apps ~ ., data = College.train, scale = TRUE, validation = "CV")
+validationplot(fit.pcr, val.type = "MSEP")
+```
+```{r}
+pred.pcr <- predict(fit.pcr, College.test, ncomp = 10)
+mean((pred.pcr - College.test$Apps)^2)
+```
+**R:**.El MSE del error de prueba es de $1.867486^{6}$. Más grande que los anteriores. 
+
+
+**f.** Ajuste un modelo PLS en el conjunto de entrenamiento, con M elegido por validación cruzada. Informe el error de prueba obtenido, junto con el valor de M seleccionado por validación cruzada.
+```{r}
+fit.pls <- plsr(Apps ~ ., data = College.train, scale = TRUE, validation = "CV")
+validationplot(fit.pls, val.type = "MSEP")
+```
+```{r}
+pred.pls <- predict(fit.pls, College.test, ncomp = 10)
+mean((pred.pls - College.test$Apps)^2)
+```
+**R:**El MSE del error de prueba es de $1.031287^{6}$. Más grande que los anteriores pero menos que el de PCR.
+
+
+**g.** Comente los resultados obtenidos. ¿Con qué precisión podemos predecir el número de solicitudes universitarias recibidas? ¿Hay mucha diferencia entre los errores de prueba resultantes de estos cinco enfoques?
+
+```{r}
+test.avg <- mean(College.test$Apps)
+lm.r2 <- 1 - mean((pred.lm - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+ridge.r2 <- 1 - mean((pred.ridge - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+lasso.r2 <- 1 - mean((pred.lasso - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+pcr.r2 <- 1 - mean((pred.pcr - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+pls.r2 <- 1 - mean((pred.pls - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+```
+
+**R:** La prueba R2 para mínimos cuadrados es 0.910422, la prueba R2 para cresta es 0.9000536, la prueba R2 para lazo es 0.910423, la prueba R2 para pcr es 0.836970 y la prueba R2 para pls es 0.909969. Todos los modelos, excepto PCR, predicen con gran precisión.
+
+
+#### 9. Hemos visto que a medida que aumenta el número de características utilizadas en un modelo, el error de entrenamiento necesariamente disminuirá, pero el error de prueba no lo hará. Ahora exploraremos esto en un conjunto de datos simulados.
+
+**a.** Genere un conjunto de datos con p=20 características, n=1,000 observaciones y un vector de respuesta cuantitativa asociado generado de acuerdo con el modelo
+Y=Xβ+ε
+donde β tiene algunos elementos que son exactamente iguales a cero.
+
+```{r}
+set.seed(1)
+x <- matrix(rnorm(1000 * 20), 1000, 20)
+b <- rnorm(20)
+b[3] <- 0
+b[4] <- 0
+b[9] <- 0
+b[19] <- 0
+b[10] <- 0
+eps <- rnorm(1000)
+y <- x %*% b + eps
+```
+
+
+**b.** Divida su conjunto de datos en un conjunto de entrenamiento que contenga 100 observaciones y un conjunto de prueba que contenga 900 observaciones.
+
+```{r}
+train <- sample(seq(1000), 100, replace = FALSE)
+test <- -train
+x.train <- x[train, ]
+x.test <- x[test, ]
+y.train <- y[train]
+y.test <- y[test]
+```
+
+
+**c.** Realice la mejor selección de subconjunto en el conjunto de entrenamiento y trace el conjunto de entrenamiento MSE asociado con el mejor modelo de cada tamaño.
+
+```{r}
+data.train <- data.frame(y = y.train, x = x.train)
+regfit.full <- regsubsets(y ~ ., data = data.train, nvmax = 20)
+train.mat <- model.matrix(y ~ ., data = data.train, nvmax = 20)
+val.errors <- rep(NA, 20)
+for (i in 1:20) {
+    coefi <- coef(regfit.full, id = i)
+    pred <- train.mat[, names(coefi)] %*% coefi
+    val.errors[i] <- mean((pred - y.train)^2)
+}
+plot(val.errors, xlab = "Number of predictors", ylab = "Training MSE", pch = 19, type = "b")
+```
+
+
+**d.** Grafique el conjunto de prueba MSE asociado con el mejor modelo de cada tamaño.
+
+```{r}
+data.test <- data.frame(y = y.test, x = x.test)
+test.mat <- model.matrix(y ~ ., data = data.test, nvmax = 20)
+val.errors <- rep(NA, 20)
+for (i in 1:20) {
+    coefi <- coef(regfit.full, id = i)
+    pred <- test.mat[, names(coefi)] %*% coefi
+    val.errors[i] <- mean((pred - y.test)^2)
+}
+plot(val.errors, xlab = "Number of predictors", ylab = "Test MSE", pch = 19, type = "b")
+```
+
+
+**e.** ¿Para qué tamaño de modelo el conjunto de prueba MSE toma su valor mínimo? Comenta tus resultados. Si toma su valor mínimo para un modelo que contiene solo una intersección o un modelo que contiene todas las características, juegue con la forma en que está generando los datos en (a) hasta llegar a un escenario en el que el conjunto de prueba MSE se minimiza para un modelo intermedio.
+
+```{r}
+which.min(val.errors)
+```
+
+**f.** ¿Cómo se minimiza el modelo en el cual el conjunto de prueba MSE se minimiza en comparación con el modelo verdadero utilizado para generar los datos? Comente los valores de los coeficientes.
+
+```{r}
+coef(regfit.full, which.min(val.errors))
+```
+
+
+**g.** Cree un gráfico que muestre
+
+$\sqrt{\sum_{j=1}^{p} (β_j−\hat{β}_j^r)^2}$
+
+para un rango de valores de r, donde $\hat{β}_j^r$ es la estimación del coeficiente j para el mejor modelo que contiene los coeficientes. Comenta sobre lo que observas. ¿Cómo se compara esto con la trama MSE de prueba de (d)?
+
+```{r}
+val.errors <- rep(NA, 20)
+x_cols = colnames(x, do.NULL = FALSE, prefix = "x.")
+for (i in 1:20) {
+    coefi <- coef(regfit.full, id = i)
+    val.errors[i] <- sqrt(sum((b[x_cols %in% names(coefi)] - coefi[names(coefi) %in% x_cols])^2) + sum(b[!(x_cols %in% names(coefi))])^2)
+}
+plot(val.errors, xlab = "Number of coefficients", ylab = "Error between estimated and true coefficients", pch = 19, type = "b")
+```
+
+**R:**Podemos ver que el modelo con 3 variables minimiza el error entre los coeficientes estimados y verdaderos. Sin embargo, el error de prueba se minimiza con el modelo con 14 variables. Por lo tanto, un mejor ajuste de los coeficientes verdaderos no significa necesariamente un MSE de prueba más bajo.
+
+
+#### 10. Ahora intentaremos predecir la tasa de criminalidad per cápita en el conjunto de datos de Boston
+
+**a.** Pruebe algunos de los métodos de regresión vistos, tales como la mejor selección de subconjuntos, el lasso, la regresión de cresta y el PCR. Presente y discuta los resultados de los enfoques que considere.
+
+```{r}
+library(MASS)
+data(Boston)
+set.seed(1)
+
+predict.regsubsets <- function(object, newdata, id, ...) {
+    form <- as.formula(object$call[[2]])
+    mat <- model.matrix(form, newdata)
+    coefi <- coef(object, id = id)
+    xvars <- names(coefi)
+    mat[, xvars] %*% coefi
+}
+
+k = 10
+folds <- sample(1:k, nrow(Boston), replace = TRUE)
+cv.errors <- matrix(NA, k, 13, dimnames = list(NULL, paste(1:13)))
+for (j in 1:k) {
+    best.fit <- regsubsets(crim ~ ., data = Boston[folds != j, ], nvmax = 13)
+    for (i in 1:13) {
+        pred <- predict(best.fit, Boston[folds == j, ], id = i)
+        cv.errors[j, i] <- mean((Boston$crim[folds == j] - pred)^2)
+    }
+}
+mean.cv.errors <- apply(cv.errors, 2, mean)
+plot(mean.cv.errors, type = "b", xlab = "Number of variables", ylab = "CV error")
+```
+
+Podemos ver que la validación cruzada selecciona un modelo de 12 variables. Tenemos una estimación de CV para la prueba MSE igual a 41.0345657.
+
+Lasso.
+
+```{r}
+x <- model.matrix(crim ~ ., Boston)[, -1]
+y <- Boston$crim
+cv.out <- cv.glmnet(x, y, alpha = 1, type.measure = "mse")
+plot(cv.out)
+```
+
+Aquí la validación cruzada selecciona un λ igual a 0.0467489. Tenemos una estimación de CV para la prueba MSE igual a 42.134324.
+
+Ridge regression.
+
+```{r}
+cv.out <- cv.glmnet(x, y, alpha = 0, type.measure = "mse")
+plot(cv.out)
+```
+
+Aquí la validación cruzada selecciona un λ igual a 0.5374992. Tenemos una estimación de CV para la prueba MSE igual a 42,9834518.
+
+PCR.
+
+```{r}
+pcr.fit <- pcr(crim ~ ., data = Boston, scale = TRUE, validation = "CV")
+summary(pcr.fit)
+```
+
+```{r}
+validationplot(pcr.fit, val.type = "MSEP")
+```
+
+Aquí la validación cruzada selecciona M para que sea igual a 14 (por lo tanto, no hay reducción de dimensión). Tenemos una estimación de CV para la prueba MSE igual a 45,693568.
+
+**b.** Proponga un modelo (o conjunto de modelos) que parezca funcionar bien en este conjunto de datos y justifique su respuesta. Asegúrese de evaluar el rendimiento del modelo utilizando el error del conjunto de validación, la validación cruzada u otra alternativa razonable, en lugar de utilizar el error de entrenamiento
+
+**R:** Como se calculó anteriormente, el modelo con el menor error de validación cruzada es el elegido por el  método de selección del  subconjuntos.
+
+**c.** ¿Su modelo elegido involucra todas las características del conjunto de datos? ¿Por qué o por qué no?
+
+**R:**No, el modelo elegido por el  método de  selección del mejor subconjuntos tiene solo 13 predictores.

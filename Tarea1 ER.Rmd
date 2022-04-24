@@ -1,0 +1,941 @@
+---
+title: "Tarea 1: Ciencia de Datos"
+author: "Emmanuel Rueda Escalona"
+date: "31/1/2021"
+output: html_document
+---
+<center style="color:black; font-size: 200%">**Problem Set 1**</center> 
+
+## Instrucciones
+
+Siéntase libres de trabajar en grupo mientras resuelve esta tarea. Sin embargo, las entregas sólo se permiten en forma individual. La bandeja de entrega estará disponible en Canvas. Por favor, hagan que sus escritos sean legibles. En particular para las preguntas empíricas, incluyan los resultados estadísticos necesarios para responder a las preguntas. Responda de manera independiente a cada una de las preguntas.
+
+**Puntos totales:100**
+
+# Parte 1 (30 puntos)
+
+#### 1. Explique si cada escenario es un problema de clasificación o de regresión, e indique si estamos más interesados en la inferencia o la predicción. Finalmente, proporcione n y p.
+
+**A.** Recopilamos un conjunto de datos sobre las 500 empresas más importantes de los EE.UU. Para cada empresa registramos los beneficios, el número de empleados, la industria y el salario del CEO. Estamos interesados en entender qué factores afectan el salario del CEO.
+
+n=500
+
+p=3 (Beneficios, Industria, # de empleados)
+
+**Inferencia:** Porque buscamos la relación entre las variables predictoras y la responsiva. 
+
+**Regresión:** Porque buscamos una Y numérica.(El salario $ del CEO)
+
+**B.** Estamos considerando el lanzamiento de un nuevo producto y queremos saber si será un éxito o un fracaso. Recopilamos datos sobre 20 productos similares que fueron lanzados anteriormente. Para cada producto hemos registrado si fue un éxito o un fracaso, el precio cobrado por el producto, el presupuesto de marketing, el precio de la competencia y otras diez variables.
+
+n=20
+
+p=14
+
+**Predicción:**Buscamos un resultado para predecir si será un éxito o no el producto
+
+**Clasificación:**Ya que esperamos un resultado cualitativo (SI o NO)
+
+**C.** Estamos interesados en predecir el cambio porcentual en el tipo de cambio USD/Euro en relación con los cambios semanales en los mercados de valores mundiales. Por lo tanto, recogemos datos semanales para todo el año 2012. Para cada semana registramos el % de cambio en el USD/Euro, el % de cambio en el mercado de EE.UU., el % de cambio en el mercado británico, y el % de cambio en el mercado alemán.
+
+n=52 (#semanas en el año 2012)
+
+p=3 
+
+**Predicción:**El mismo texto nos lo dice 
+
+**Regresión:**Ya que buscamos un resultado numérico, los cambios porcentuales son numéricos. 
+
+
+#### 2. Ahora revisamos la descomposición de la variación del sesgo.
+
+
+**A.**Proporcionar un bosquejo de los sesgos típicos (al cuadrado), la varianza, el error de entrenamiento, el error de prueba y las curvas de error Bayes (o irreducibles), en un solo plot, a medida que pasamos de métodos de aprendizaje estadístico menos flexibles a enfoques más flexibles. El eje x debe representar la cantidad de flexibilidad del método, y el eje y debe representar los valores de cada curva. Debe haber cinco curvas. Asegúrate de etiquetar cada una.
+
+<center style="color:black; font-size: 150%">**Bosquejo**</center> 
+<center><img src="Bosquejo.png" width="300"></center>
+<center style="color:blue; font-size: 100%">Fuente:https://towardsdatascience.com/the-bias-variance-tradeoff-8818f41e39e9</center> 
+
+
+**B.**Explique por qué cada una de las cinco curvas tiene la forma mostrada en la parte (A).
+
+1) <span style="color:green">**El error de prueba o generalization (test) error:**</span> Este error representa la capacidad predictiva del modelo con datos no vistos. En modelos poco flexibles su capacidad de predecir será baja (*MSE test* altas) si la f real no es lineal. A medida que aumenta la flexibilidad el error puede disminuirse pero llega un punto donde el error vuelve a aumentar a mayor flexibilidad, esto se debe por el fenómeno de sobreajuste de los modelos más flexibles donde dichos modelos encuentran más patrones en los datos de entrenamiento de los que en realidad existen y se vuelven poco certeros para predecir con datos no vistos. 
+
+2) <span style="color:black">**El error de entrenamiento o training error:**</span> Este error es el referente  al que se obtine de los datos observados y con los que se "entrenó" al modelo. Entre más flexible generalmente siempre será menor, inclusive al *MSE test* o al error irreducible pero no asegura más que la efectividad descriptiva de los datos vistos.
+
+3) <span style="color:gold">**El error de sesgo o bias error:**</span> El error que se introduce aproximando a los problemas de la vida real. Naturalmente entre más preciso y flexible sea el modelo más descriptivo de lo que ocurre será. Los modelos menos flexibles y lineales normalmente no son tan "realistas", en términos de descripción de la realidad en su totalidad. 
+
+4) <span style="color:blue">**La Varianza:**</span> Por otro lado, la varianza es la volatilidad con la que $\hat{f}$ puede cambiar cuando se usan diferentes datos de entrenamiento. A mayor flexibilidad la varianza tiende a subir. Es decir, cuando los modelos son más flexibles también son más volatiles a grandes cambios en los datos (como por ejemplo con muchas observaciones atípicas)
+
+5) <span style="color:red">**El error irreducible o las curvas de error Bayes:**</span> El error irreducible en los problemas de regresión (cuantitativos) son análagos a los errores de las curvas de error Bayes en problemas de clasificación (cualitativos). En ambos casos el error no se ve afectado por la diferencia de flexibilidad del modelo y normalmente será el mínimo al que el *MSE test* puede alcanzar
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 3. Describa las hipótesis nulas a las que corresponden los valores p dados en la tabla 3.4 del libro. Explique qué conclusiones puede sacar basándose en estos valores p. Su explicación debe ser redactada en términos de ventas, TV, radio y periódico, más que en términos de los coeficientes del modelo lineal.
+
+<center><img src="Tabla 3.4.png" width="400"></center>
+
+
+**R=** Las hipótesis nulas  que corresponde a los valores de p en la tabla 3.4, se refieren a que todos los parámetros sean igual a cero es decir, que la hipótesis alternativa sería que al menos una $\beta_{i}$ sea diferente de cero
+
+$H_{0}$: $\beta_{1}$=$\beta_{2}$=$\beta_{3}$=0
+
+Conclusiones del valor-p de $\beta_{1}$: Existe una alta probabilidad de refutar la hipotesis nula y asegurar que existirá un incremento de ventas de 49 unidades por cada $1000 invertidos en publicidad en TV, asumiendo una cantidad dada de comerciales en Periódicos y Radio.
+
+Conclusiones del valor-p de $\beta_{2}$: Existe una alta probabilidad de refutar la hipotesis nula y asegurar que existirá un incremento de ventas de 189 unidades por cada $1000 invertidos en publicidad en Radio, asumiendo una cantidad dada de comerciales en Periódicos y TV.
+
+Conclusiones del valor-p de $\beta_{3}$: NO existe una alta probabilidad de refutar la hipotesis nula, esto quiere decir que el efecto en publicidad en Periódicos no sea significativo o esté dependiente a los otros factores, es decir, que el gasto en inversión de publicidad en Periódicos no reflejaría un incremento en ventas,  asumiendo una cantidad dada de comerciales en TV y Radio.
+
+**En resumen:** Existe una alta probabilidad de que las inversiones en publicidad de Tv y Radio sean redituables en un incremento en las ventas. Sin embargo, la inversión en publicidad en periódicos puede no ser así debido a que en las observaciones de entrenamiento, la publicidad en Radio puede estar subrrogando los resultados de ventas beneficiados por la de publicidad  de Periódico. 
+
+#### 4. Supongamos que tenemos un conjunto de datos con cinco predictores:
+
+$X_{1}$=GPA
+$X_{2}$=IQ
+$X_{3}$=Género(1−mujer;0−hombre)
+$X_{4}$=InteracciónentreGPAyIQ
+$X_{5}$=InteracciónentreGPAyGénero
+
+La respuesta es el salario inicial después de la graduación (en miles de dólares). Supongamos que usamos los mínimos cuadrados para ajustar el modelo, y obtenemos:
+$β_{0}$=50,$β_{1}$=20,$β_{2}$=0.07,$β_{3}$=35,$β_{4}$=0.01,$β_{5}$=−10
+
+**A.**¿Qué respuesta es correcta y por qué?
+
+~~-i. Por un valor fijo de IQ y GPA, los hombres ganan más en promedio que las mujeres.~~
+
+~~-ii. Por un valor fijo de IQ y GPA, las mujeres ganan más en promedio que los hombres.~~
+
+**-iii. Para un valor fijo de IQ y GPA, los hombres ganan más en promedio que las mujeres siempre que el GPA sea lo suficientemente alto. Respuesta Correcta** 
+
+~~-iv. Para un valor fijo de IQ y GPA, las mujeres ganan más en promedio que los hombres siempre que el GPA sea lo suficientemente alto.~~
+ 
+**R=**Es la 3 porque la ecuación del regresión lineal sería:
+
+**Y = 50+20(GPA)+0.07(IQ)+35(Gender)+0.01(GPA* IQ)-10(GPA* Gender)** 
+
+Si fijamos un valor de GPA = k1 y fijamos un valor de IQ = k2 
+
+La ec. para hombres sería  = 50+20(k1)+0.07(k2)+35(0)+0.01(k1* k2)-10(k1* 0) = 50+20k1+0.07k2+0.01(k1*k2) 
+
+Y la ec. para mujeres queda  = 50+20(k1)+0.07(k2)+35(1)+0.01(k1* k2)-10(k1* 1) = 50+20k1+0.07k2+35+0.01(k1*k2)-10(k1) 
+
+Entonces en i y ii no podemos concluir que siempre uno de los dos géneros ganará más porque depende de qué tan grande o chico es el valor GPA (K1). Es **iii** porque si el valor GPA es más alto de 3.5, los hombres ganarán más que las mujeres y no viceversa como se específica en iv. 
+
+
+
+**B.** Predecir el salario de una mujer con un coeficiente intelectual de 110 y un promedio de 4.0.
+
+**R=50+20(4)+0.07(110)+35(1)+0.01(4*110)-10(4*1)=137.1, es decir, $137,100**
+
+**C.** Verdadero o falso: Dado que el coeficiente del término de interacción GPA/IQ es muy pequeño, hay muy poca evidencia de un efecto de interacción. Justifique su respuesta.
+
+**R=FALSO**. El valor p, la t estadística y la F estadística son los valores que necesitamos para concluir si hay evidencia o no de un efecto de interacción, no el coeficiente. 
+
+#### 5.Supongamos que tomamos un conjunto de datos:
+Lo dividimos en conjuntos de entrenamiento y pruebas de igual tamaño, y luego probamos dos procedimientos de clasificación diferentes. Primero usamos la regresión logística y obtenemos una tasa de error del 20% en los datos de entrenamiento y del 30% en los datos de prueba. A continuación, utilizamos los vecinos más cercanos (es decir, K = 1) y obtenemos una tasa de error promedio (promediada sobre los conjuntos de datos de prueba y entrenamiento) del 18%. Basándonos en estos resultados, ¿qué método deberíamos preferir para clasificar las nuevas observaciones? ¿Por qué?
+
+**R:La mejor opción es escoger la regresión lógistic porque tiene un error de prueba más bajo. La tasa de error de la regresión lógistica es del 20% mientras que en la de KNN es de 36%**
+
+
+#### 6. Este problema tiene que ver con las probabilidades.
+
+**A.**En promedio, ¿qué fracción de personas con una probabilidad de 0,37 de incumplir el pago de su tarjeta de crédito incumplirá de hecho?
+
+
+<center>**P(X)=** $\frac{0.37}{1+0.37}$ =$\frac{37}{137}$</center>
+
+
+**R:**Es decir, en promedio un **27%** personas de hecho incumpliran con su pago de la tarjeta de crédito. 
+
+
+**B.**Supongamos que un individuo tiene una probabilidad del 16% de no pagar con su tarjeta de crédito. ¿Cuáles son las probabilidades de que ella no pague?
+
+P(X)=0.16 => $\frac{0.16}{1-0.16}$=$\frac{4}{21}$
+
+**R:**La probabilidad de que ella no pague su tarjeta de crédito es de **19%**
+
+
+
+# Parte 2 (70 puntos)
+
+#### 7. Este ejercicio involucra el conjunto de datos de "Auto"" estudiados en el laboratorio. Asegúrate de que los valores que faltan han sido eliminados de los datos.
+
+
+Librerias requeridas:
+```{r message=FALSE, warning=FALSE}
+library(ISLR); library(tidyselect); library(knitr); library(rlang);library(tidyr); library(tools); library(devtools)
+library(dplyr)
+
+```
+```{r warning=FALSE}
+Auto<-read.table("Auto.data.txt",T,na.strings = "?")
+head(Auto)
+```
+
+```{r}
+Auto<-na.omit(Auto)
+dim(Auto)
+```
+
+**A** ¿Cuáles de los predictores son cuantitativos y cuáles cualitativos?
+```{r}
+names(Auto)
+
+```
+Simplemente observado los nombres de las variables y sus valores en *head* se puede apreciar que hay cinco variables cuantitativas y cuatro cualitativas. Las cuantitativas son: mpg, displacement, horsepower, weight y acceleration. Y las cualitativas son: origin(aunque están definidos por números, clasifican el país de origen), name, year y cylinders. Año y cilindros podrían ser cuantitativas sin embargo en términos de automóviles no hay cilidros o años de fabricación continuos y son más bien categoricos del auto.  
+
+**B.**¿Cuál es el rango de cada predictor cuantitativo? Puedes responder a esto usando la función range().
+
+
+```{r}
+kable(Auto %>%
+          select(-name, -origin, -cylinders,-year) %>%
+          gather(Variable, value) %>%
+          group_by(Variable) %>%
+          summarize(min = min(value), max = max(value), rango = max(value) - min(value)))
+```
+
+**C.**¿Cuál es la media y la desviación estándar de cada predictor cuantitativo?
+
+```{r}
+kable(Auto %>%
+          select(-name, -origin, -cylinders, -year) %>%
+          gather(Variable, value) %>%
+          group_by(Variable) %>%
+          summarize(Media = mean(value), SD = sd(value)),
+      digits = 2)
+```
+
+
+**D.**Ahora quite las observaciones de la 10ª a la 85ª. ¿Cuál es el rango, la media y la desviación estándar de cada predictor en el subconjunto de los datos que quedan?
+
+```{r}
+kable(Auto %>%
+          slice(-(10:85)) %>%
+          gather(Variable, value, -origin, -name, -cylinders, -year) %>%
+          group_by(Variable) %>%
+          summarize(min = min(value), 
+                    max = max(value), 
+                    rango = max(value) - min(value), 
+                    media = mean(value),
+                    SD = sd(value)),
+      digits = 2)
+```
+
+
+**E.**Usando el conjunto completo de datos, investiga los predictores gráficamente, usando gráficos de dispersión u otras herramientas de tu elección. Crea algunos gráficos que resalten las relaciones entre los pronosticadores. Comente sus hallazgos.
+
+```{r message=FALSE, warning=FALSE}
+attach(Auto)
+pairs(~mpg+displacement+horsepower+weight+acceleration+cylinders+year+origin,Auto)
+
+require(corrplot)
+cor_test <- cor.mtest(Auto[,c(1:7)] %>% 
+                          mutate(cylinders = as.numeric(cylinders)), 
+                      conf.level = .99)
+corrplot(cor(Auto[,c(1:7)] %>% 
+                          mutate(cylinders = as.numeric(cylinders))),
+         order = 'hclust', addrect = 2,
+         p.mat = cor_test$p, sig.level = 0.01, 
+         method = 'color',
+         tl.col = 'black', title = 'Correlaciones de conjunto de daos Auto', mar = c(0,0,1,0))
+plot(horsepower,mpg)
+
+```
+
+
+**R:** De acuerdo a los gráficos puede que exista un relación negativa entre *MPG* (Millas o Km por Lt de gasolina) con variables como *weight* (peso), HP y *displacement*. También podemos ver que la variable *HP* (caballos de fuerza) puede encontrarse relacionada positivamente con *weight*  (peso) y *displacement*.
+
+**F.**Supongamos que deseamos predecir el kilometraje de gas (mpg) en base a las otras variables. ¿Sus gráficos sugieren que alguna de las otras variables podría ser útil para predecir el mpg? Justifique su respuesta.
+
+```{r}
+plot(mpg,displacement)
+plot(mpg, horsepower)
+plot(mpg,weight)
+```
+ 
+ **R:**De acuerdo al punto anterior puede que exista una relación negativa entre *MPG* (Millas o Km por Lt de gasolina) con variables como *weight* (peso), HP y *displacement* debido a que de acuerdo a la lógica entre mayor es el peso y el tamaño su gasto de gasolina será mayor, igualmente entre mayor es la potencia del coche (representado en caballos de fuerza) su gasto de gasolina será mayor, es decir, el mpg será más bajo. 
+ 
+#### 8. Este ejercicio involucra el conjunto de datos de la vivienda de Boston.
+
+**A.** Para empezar, cargue el conjunto de datos de Boston. El conjunto de datos de Boston es parte de la librería MASS en R.
+
+```{r message=FALSE, warning=FALSE}
+library (MASS)
+```
+
+Ahora el conjunto de datos está contenido en el objeto Boston.
+
+#Boston
+Lea sobre el conjunto de datos:
+#?Boston
+
+¿Cuántas filas hay en este conjunto de datos? ¿Cuántas columnas? ¿Qué representan las filas y columnas?
+
+
+**R:** Hay 506 filas y 14 columnas. Las columnas representan los predictores.Las filas representan los suburbios donde un conjunto de predictores generó una obervación. 
+ 
+ 
+**B.** Haga algunos diagramas de dispersión por pares de los predictores (columnas) de este conjunto de datos. Describa sus hallazgos.
+```{r}
+Boston$chas <- as.numeric(Boston$chas)
+Boston$rad <- as.numeric(Boston$rad)
+pairs(Boston)
+```
+
+NOTA: Se convirtió a numérico las variables "chas" y "rad" dado que era cualitativas. 
+
+**R:** Dado que son muchos diagramas es difícil de ver algo significativo pero se puede observar que posiblemente haya una relación negativa entre las variables **medv-istat** y **nax-dis** así como una relación positiva entre **medv-rm**
+
+
+**C.** ¿Alguno de los pronósticos está asociado con la tasa de criminalidad per cápita? Si es así, explique la relación.
+
+```{r HMISC, message=FALSE, warning=FALSE}
+ library(Hmisc)
+flat_cor_mat <- function(cor_r, cor_p){
+  library(tidyr)
+  library(tibble)
+  cor_r <- rownames_to_column(as.data.frame(cor_r), var = "row")
+  cor_r <- gather(cor_r, column, cor, -1)
+  cor_p <- rownames_to_column(as.data.frame(cor_p), var = "row")
+  cor_p <- gather(cor_p, column, p, -1)
+  cor_p_matrix <- left_join(cor_r, cor_p, by = c("row", "column"))
+  cor_p_matrix
+}
+cor_3 <- rcorr(as.matrix(Boston))
+
+my_cor_matrix <- flat_cor_mat(cor_3$r, cor_3$P)
+head(my_cor_matrix, 14)
+```
+**R:** Como se puede observar en la tabla anterior existen varias variables con una alta relación positiva y negativa con crim, tomando en cuenta su coeficiente y su valor-p
+
+
+**D.** ¿Alguno de los suburbios de Boston parece tener una tasa de criminalidad particularmente alta? ¿Tasa de impuestos? ¿Relación alumnos-profesores? Comente el rango de cada predictor.
+
+<center>**Tasa de criminalidad**</center>
+```{r message=FALSE, warning=FALSE}
+summary(Boston$crim)
+library(ggplot2)
+qplot(Boston$crim, binwidth=10 , xlab = "Tasa de criminalidad", ylab="Número de suburbios" )
+```
+
+Considerando que la mediana y el máximo de los valores de criminalidad son 0.26% and 89% respectivamente, hay algunos vecindarios que es bastante alta la tasa.
+```{r}
+selection <- subset( Boston, crim > 26)
+nrow(selection)/ nrow(Boston)
+```
+**2% de los vecindarios tienen una tasa igual o más alta a la mediana.**
+
+<center>**Tasa de impuestos**</center>
+```{r}
+summary(Boston$tax)
+qplot(Boston$tax, binwidth=100 , xlab = "Valor real de la tasa de impuestos a la propiedad por $10,000", ylab="Numero de suburbios")
+```
+
+Como se muestra en el histograma de la tasa de impuestos, hay pocos vecindarios que tienen una tasa alta de impuestos, el promedio y la mediana se encuentran entre 300 y 408 dólares. 
+
+```{r}
+selection <- subset( Boston, tax> 600) 
+nrow(selection)/ nrow(Boston)
+```
+**Solo el 27% de los vecindarios paga más de 600 dólares de impuestos.** 
+
+
+<center>**Tasa de relación alumnos-profesores**</center> 
+```{r}
+summary(Boston$ptratio)
+qplot(Boston$ptratio, binwidth=1, xlab ="Radio de Profesor-Alumno por condado", ylab="Número de Suburbios")
+```
+```{r}
+selection <- subset( Boston, ptratio> 20) 
+nrow(selection)/ nrow(Boston)
+```
+
+**De acuardo al histograma hay varios suburbios que tienen una tasa alta de relación alumnos por profesor, el 39% mayor a 20 alumnos por profesor.**  
+
+**E.** ¿Cuántos de los suburbios en este conjunto de datos limitan el río Charles?
+
+```{r}
+nrow(subset(Boston, chas ==1)) 
+```
+**R:**35 suburbios
+
+**F.** ¿Cuál es la media de la relación alumno-profesor entre las ciudades de este conjunto de datos?
+```{r}
+summary(Boston$ptratio)
+```
+
+
+**R:**La mediana de 19 alumnos por profesor, la media de 18.46 (19)
+
+**G.** ¿Qué suburbio de Boston tiene el valor medio más bajo de casas ocupadas por sus dueños? ¿Cuáles son los valores de los otros pronosticadores para ese suburbio, y cómo se comparan esos valores con los rangos generales de esos pronosticadores? Comente sus hallazgos.
+
+```{r}
+selection <- Boston[order(Boston$medv),]
+head(selection,2)
+```
+**R:**De acuerdo al criterio de valor medio de propietarios de casa ocupadas (mevd) los suborbios que tienen el valor más bajo son el número 399 y 406 con 5000 dólares. 
+```{r}
+summary(Boston)
+```
+
+**R:** Tanto el suburbio 309 y 406 tienen un alto nivel criminalidad y la tasa promedio de la misma variable está muy por arriba de la media. Como se mencionó anteriormente, son los dos suburbios con menor tasa de valor medio de hogares ocupado. No tienen acceso al rio Charles, son zonas altamente industrializadas y no hay zonas residenciales. Tiene alta concentración de $NO_{2}$ debido a la industrialización de la zona. Hay una alta densidad poblacional sobretodo afroamericana (la máxima de la zona en el suburbio 399) y está por encima de la media en cuanto tasa alumno por profesor. Es decir, claramente son vecindarios pobres y marginados.  
+
+**H.** En este conjunto de datos, 
+**A.** ¿cuántos de los suburbios tienen un promedio de más de siete habitaciones por vivienda? 
+
+```{r}
+rm_over_7 <- subset(Boston, rm>7)
+nrow(rm_over_7) 
+```
+**R:** Existen 64 suburbios que tienen un promedio 7 o más habitaciones por vivienda 
+
+**B.** ¿Más de ocho habitaciones por vivienda? 
+```{r}
+rm_over_8 <- subset(Boston, rm>8)
+nrow(rm_over_8) 
+```
+**R:** Existen 13 suburbios que tienen un promedio 8 o más habitaciones por vivienda 
+
+**C.** Comente los suburbios que tienen un promedio de más de ocho habitaciones por vivienda.
+
+```{r}
+summary(rm_over_8)
+```
+
+**R:** Claramente son zonas de nivel socioeconómico alto. Esto se puede ver en el valor medio de hogares ocupados, ya que alcanzan una media de 44,000 dólares. Igualmente tienen niveles muy por debajo de la media en tasas de criminalidad y de alumno-profesor. Curiosamente no tienen un promedio más alto de pago de impuestos en comparación a los suburbios 399 y 406.
+
+
+#### 9. Esta pregunta debe responderse utilizando el conjunto de datos de Carseats.
+
+```{r message=FALSE, warning=FALSE}
+data("Carseats", package = "ISLR")
+summary(Carseats)
+```
+
+**A.** Ajustar un modelo de regresión múltiple para predecir "Sales"" usando "Price"", "Urban" y "US".
+```{r}
+lm.fit <-  lm(Sales ~ Price + Urban + US, data = Carseats)
+summary(lm.fit)
+```
+
+**B.** Proporcionar una interpretación de cada coeficiente en el modelo. Tengan cuidado, algunas de las variables del modelo son cualitativas.
+
+**Precio:** Podemos sugerir que la relación entre precio y ventas es negativa, dado el bajo valor de p del stadístico t. Entre más aumenta el precio las ventas decrecen. 
+
+**UrbanYes:** No existe evidencia suficiente para suponer que hay un relación importante entre la ubicación (en zona urbana o no) de la tienda y el aumento o decrecimiento de las ventas. 
+
+**USYes:** De acuerdo al bajo valor de p se puede sugerir que hay una relación positiva entre en qué país se encuentra la tienda y las ventas, es decir, si la tienda se encuentra en EE.UU. las ventas  crecerán. 
+
+**C.** Escribir el modelo en forma de ecuación, teniendo cuidado de manejar las variables cualitativas adecuadamente.
+
+<center>**Sales = 13.04 - 0.05 Price - 0.02 Urban(Yes=1, No=0) + 1.20 US(Yes=1,No=0)**</center>
+
+
+**D**¿Por cuál de los predictores puedes rechazar la hipótesis nula H0:$\beta_{j}$=0?
+
+**R:**Basándonos en el resumen de la corelación lineal multivariada y en los valores resultantes en el valor p y la F estadística podemos sugerir que gracias a los predictores *Price* y *USYes* podemos rechazar H0.
+
+**E.** Sobre la base de su respuesta a la pregunta anterior, ajuste un modelo más pequeño que sólo utilice los pronosticadores para los que haya pruebas de asociación con el resultado.
+
+```{r}
+lm.fit2 <-  lm(Sales ~ Price + US, data = Carseats)
+summary(lm.fit2)
+```
+
+
+**F.** ¿Qué tan bien encajan los modelos en (a) y (e) los datos?
+
+
+**R:**Aunque los valores de $R^2$ y el RSE no cambiaron mucho, el valor del estadístico F crecio, con lo cual quiere decir que la regresión se ajusta un poco mejor respecto al modelo anterior.
+
+
+**G.** Utilizando el modelo de (e), obtener intervalos de confianza del 95% para el (los) coeficiente(s).
+
+```{r}
+confint(lm.fit2)
+```
+
+**H.** ¿Existen pruebas de observaciones atípicas o de alto apalancamiento en el modelo de (e)?
+
+```{r}
+plot(predict(lm.fit2), rstudent(lm.fit2))
+```
+
+**R:** De acuerdo a la gráfica de residuales, todos las posibles todos los posibles valores se delimitan entre 3 y -3 por lo que es poco probable que exista un valor atípico o alto apalancamiento en el modelo. 
+
+
+
+#### 10. En este ejercicio se crearán algunos datos simulados y se ajustarán modelos simples de regresión lineal. 
+Asegúrate de usar set.seed(1) antes de comenzar la parte (a) para asegurar resultados consistentes.
+
+
+**A.** Utilizando la función rnorm(), cree un vector, x, que contenga 100 observaciones extraídas de una distribución N(0, 1). Esto representa una característica, X.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+```
+
+
+**B.** Utilizando la función rnorm(), cree un vector, eps, que contenga 100 observaciones extraídas de una distribución N(0, 0.25), es decir, una distribución normal con una media de cero y una varianza de 0.25.
+
+```{r}
+eps <- rnorm(100, sd = sqrt(0.25))
+```
+
+
+**C.** Usando x y eps, genera un vector y de acuerdo con el modelo Y=−1+0.5X+ϵ (i.e. 3.39). ¿Cuál es la longitud del vector y? ¿Cuáles son los valores de β0 y β1 en este modelo lineal?
+
+```{r}
+y <- -1 + 0.5 * x + eps
+length(y)
+```
+**R:** La longitud del modelo es de 100, $\beta_{0}$=-1 y $\beta_{1}$= 0.5 
+
+**D.** Crea un diagrama de dispersión que muestre la relación entre x e y. Comenta lo que observas.
+```{r}
+plot(x, y)
+```
+
+**R:**Existe una ligera relación positiva entre x y y.
+
+
+**E.**Ajustar un modelo lineal de mínimos cuadrados para predecir y usando x. Comentar el modelo obtenido. How do β^0 and β^1 compare to β0 and β1?
+
+```{r}
+fit9 <- lm(y ~ x)
+summary(fit9)
+```
+**R:** Los valores de $\tilde{\beta_{0}}$ y $\tilde{\beta_{1}}$ son bastante  cercano a $\beta_{0}$ y $\beta_{1}$. El modelo tiene un valor-p muy cercano a cero y la F estadística es grande como para recharzar $H_{0}$.
+
+
+**F.** Mostrar la línea de mínimos cuadrados en el diagrama de dispersión obtenido en (d). Dibujar la línea de regresión de la población en el gráfico, en un color diferente. Utilice el comando legend() para crear una leyenda apropiada.
+
+```{r}
+plot(x, y)
+abline(fit9, col = "gold")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("gold", "blue"), lty = c(1, 1))
+```
+
+
+**G.**Ahora ajuste un modelo de regresión polinómica que prediga y usando x y x2. ¿Existen pruebas de que el término cuadrático mejora el ajuste del modelo? Explique su respuesta.
+
+```{r}
+fit10 <- lm(y ~ x + I(x^2))
+summary(fit10)
+```
+
+**R:** No, Al contrario el coef de $X^2$ no es signifiativo debido al valor p mayor a alfa. No hay evidencia que haciendo el factor cuarático el modelo encaje mejer a como ya estaba con el modelo lineal. 
+
+**H.**Repita los apartados de (a) a (f) después de modificar el proceso de generación de datos de manera que haya menos ruido en los datos. El modelo (3.39) debe seguir siendo el mismo. Puede hacerlo disminuyendo la varianza de la distribución normal utilizada para generar el término de error ϵ en (b). Describe tus resultados.
+
+```{r}
+set.seed(1)
+eps <- rnorm(100, sd = 0.125)
+x <- rnorm(100)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit11 <- lm(y ~ x)
+summary(fit11)
+```
+
+```{r}
+plot(x, y)
+fit11 <- lm(y ~ x)
+abline(fit11, col = "green")
+abline(-1, 0.5, col = "purple")
+legend("topleft", c("Least square", "Regression"), col = c("green", "purple"), lty = c(1, 1))
+```
+
+**R:**Se reduce el ruido reduciendo la varianza que generar el error irreducible. Los coeficientes se acercaron entre ellos haciendo un relación más lineal al modelo, subió la $R^2$ y bajó el RSE.  
+
+
+**I.**Repita los apartados a) a f) después de modificar el proceso de generación de datos de manera que haya más ruido en los datos. El modelo (3.39) debe seguir siendo el mismo. Puede hacerlo aumentando la varianza de la distribución normal utilizada para generar el término de error ϵ en (b). Describe tus resultados.
+
+```{r}
+set.seed(1)
+eps <- rnorm(100, sd = 0.5)
+x <- rnorm(100)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit12 <- lm(y ~ x)
+summary(fit12)
+```
+
+```{r}
+plot(x, y)
+fit12 <- lm(y ~ x)
+abline(fit12, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+**R:** Al incrementar el ruido, incrementando la varianza del error ε podemos ver que la relación deja de ser lineal y tenermos un $R^2$ más baja y un RSE más alta. 
+
+**J.** ¿Cuáles son los intervalos de confianza para β0 y β1 basados en el conjunto de datos originales, el conjunto de datos más ruidosos y el conjunto de datos menos ruidosos? Comenta tus resultados.
+
+<center>**Datos originales**</center>
+
+```{r}
+confint(fit9)
+```
+
+<center>**Datos con menos ruido**</center>
+
+```{r}
+confint(fit11)
+```
+
+<center>**Datos con más ruido**</center>
+
+```{r}
+confint(fit12)
+```
+
+**R:**Todos los intervalos parecen se centran aprox en 0.5 pero con mayor ruido el intervalo crece y con menor aumenta su predictibilidad  
+
+#### 11. Este problema tiene que ver con el conjunto de datos de Boston, que vimos en el laboratorio para este capítulo. 
+Ahora intentaremos predecir la tasa de criminalidad per cápita usando las otras variables de este conjunto de datos. En otras palabras, la tasa de criminalidad per cápita es la respuesta, y las otras variables son los predictores.
+
+**A.** Para cada predictor, ajustar un simple modelo de regresión lineal para predecir la respuesta. Describa sus resultados. ¿En cuál de los modelos hay una asociación estadísticamente significativa entre el predictor y la respuesta? Crea algunos gráficos para respaldar tus afirmaciones.
+
+```{r}
+library(MASS)
+attach(Boston)
+corrplot(cor(Boston), method="square")
+
+
+```
+
+```{r}
+fit.zn <- lm(crim ~ zn)
+summary(fit.zn)
+```
+
+
+```{r}
+fit.indus <- lm(crim ~ indus)
+summary(fit.indus)
+```
+```{r}
+chas <- as.factor(chas)
+fit.chas <- lm(crim ~ chas)
+summary(fit.chas)
+```
+
+```{r}
+fit.nox <- lm(crim ~ nox)
+summary(fit.nox)
+```
+```{r}
+fit.rm <- lm(crim ~ rm)
+summary(fit.rm)
+```
+```{r}
+fit.age <- lm(crim ~ age)
+summary(fit.age)
+```
+```{r}
+fit.dis <- lm(crim ~ dis)
+summary(fit.dis)
+```
+```{r}
+fit.rad <- lm(crim ~ rad)
+summary(fit.rad)
+```
+
+```{r}
+fit.tax <- lm(crim ~ tax)
+summary(fit.tax)
+```
+```{r}
+fit.ptratio <- lm(crim ~ ptratio)
+summary(fit.ptratio)
+```
+```{r}
+fit.black <- lm(crim ~ black)
+summary(fit.black)
+```
+
+```{r}
+fit.lstat <- lm(crim ~ lstat)
+summary(fit.lstat)
+```
+```{r}
+fit.medv <- lm(crim ~ medv)
+summary(fit.medv)
+```
+
+
+**R:** Como se puede orbservar, existen muchas variables con relaciones fuertes positivas (Como crim-rad, crim-tax, indus-now, medv-rm, rad-tax) y negativas (como dis-age, indus-zn, nox-dis). Prácticamente la variable "chas" es la única que no tiene una relación fuerte con ninguna otra. 
+
+**B.** Ajustar un modelo de regresión múltiple para predecir la respuesta usando todos los predictores. Describa sus resultados. ¿Para qué predictores podemos rechazar la hipótesis nula H0:βj=0?
+
+```{r}
+fit.all <- lm(crim ~ ., data = Boston)
+summary(fit.all)
+```
+**R:**Podemos rechazar la hipotesis nula gracias a las variables zn, black, medv, dis y rad. Ya que sus valores p son lo suficientemente pequeños (aunque algunos están en el margen)
+
+**C.** ¿Cómo se comparan los resultados de a) con los de b)? Crea una gráfica que muestre los coeficientes de regresión univariante de (a) en el eje x, y los coeficientes de regresión múltiple de (b) en el eje y. Es decir, cada predictor se muestra como un único punto en la gráfica. Su coeficiente en un modelo de regresión lineal simple se muestra en el eje x, y su estimación del coeficiente en el modelo de regresión lineal múltiple se muestra en el eje y.
+
+```{r}
+cor(Boston[-c(1, 4)])
+```
+```{r}
+simple.reg <- vector("numeric",0)
+simple.reg <- c(simple.reg, fit.zn$coefficient[2])
+simple.reg <- c(simple.reg, fit.indus$coefficient[2])
+simple.reg <- c(simple.reg, fit.chas$coefficient[2])
+simple.reg <- c(simple.reg, fit.nox$coefficient[2])
+simple.reg <- c(simple.reg, fit.rm$coefficient[2])
+simple.reg <- c(simple.reg, fit.age$coefficient[2])
+simple.reg <- c(simple.reg, fit.dis$coefficient[2])
+simple.reg <- c(simple.reg, fit.rad$coefficient[2])
+simple.reg <- c(simple.reg, fit.tax$coefficient[2])
+simple.reg <- c(simple.reg, fit.ptratio$coefficient[2])
+simple.reg <- c(simple.reg, fit.black$coefficient[2])
+simple.reg <- c(simple.reg, fit.lstat$coefficient[2])
+simple.reg <- c(simple.reg, fit.medv$coefficient[2])
+mult.reg <- vector("numeric", 0)
+mult.reg <- c(mult.reg, fit.all$coefficients)
+mult.reg <- mult.reg[-1]
+plot(simple.reg, mult.reg, col = "black")
+```
+
+**R:**La diferencia entre los coeficientes de regresión simple y múltiple se debe a que en el caso de regresión simple, el término pendiente representa el efecto promedio de un aumento en el predictor, ignorando otros predictores. En el caso de regresión múltiple, el término pendiente representa el efecto promedio de un aumento en el predictor, mientras se mantienen fijos los demás predictores. Tiene sentido que la regresión múltiple sugiera que no hay relación entre la respuesta y algunos de los predictores, mientras que la regresión lineal simple implica lo contrario porque la correlación entre los predictores muestra algunas relaciones sólidas entre algunos de los predictores.
+
+
+**D.**¿Existe evidencia de asociación no lineal entre alguno de los pronosticadores y la respuesta? Para responder a esta pregunta, para cada predictor X, ajustar un modelo de la forma Y = β0 + β1X + β2X2 + β3X3 + ϵ.
+
+```{r}
+fit.zn2 <- lm(crim ~ poly(zn, 3))
+summary(fit.zn2)
+```
+```{r}
+fit.indus2 <- lm(crim ~ poly(indus, 3))
+summary(fit.indus2)
+```
+```{r}
+fit.rm2 <- lm(crim ~ poly(rm, 3))
+summary(fit.rm2)
+```
+```{r}
+fit.age2 <- lm(crim ~ poly(age, 3))
+summary(fit.age2)
+```
+```{r}
+fit.dis2 <- lm(crim ~ poly(dis, 3))
+summary(fit.dis2)
+```
+
+```{r}
+fit.rad2 <- lm(crim ~ poly(rad, 3))
+summary(fit.rad2)
+```
+
+```{r}
+fit.tax2 <- lm(crim ~ poly(tax, 3))
+summary(fit.tax2)
+```
+
+```{r}
+fit.ptratio2 <- lm(crim ~ poly(ptratio, 3))
+summary(fit.ptratio2)
+```
+
+```{r}
+fit.black2 <- lm(crim ~ poly(black, 3))
+summary(fit.black2)
+```
+```{r}
+fit.lstat2 <- lm(crim ~ poly(lstat, 3))
+summary(fit.lstat2)
+```
+
+```{r}
+fit.medv2 <- lm(crim ~ poly(medv, 3))
+summary(fit.medv2)
+```
+
+Para variables rm, rad, zn, tax y lstat , el valor p sugiere que los coeficientes cúbicos no son significativos. Para predictores age, nox, indus, dis, medv y ptratio   el valor p sugiere que el coeficioente cúbico se ajusta mejor.
+
+
+#### 12. Este problema implica funciones de escritura.
+
+**A.** Escribe una función, Power(), que imprime el resultado de subir 2 a la 3ª potencia. En otras palabras, tu función debe calcular 23 e imprimir los resultados. Sugerencia: Recuerda que x^a eleva x a la potencia a. Usa la función print() para imprimir el resultado.
+```{r}
+Power <- function() {
+    2^3
+}
+
+Power()
+```
+
+**B** Crea una nueva función, Power2(), que te permite pasar dos números cualquiera, x y a, e imprime el valor de x^a. Puedes hacer esto comenzando tu función con la línea
+
+```{r}
+Power2 <- function(x, a) {
+    x^a
+}
+
+Power2(3, 8)
+```
+
+**C.** Usando la función Power2() que acabas de escribir, calcula 103, 817 y 1313.
+```{r}
+Power2(10,3)
+```
+```{r}
+Power2(8,17)
+```
+```{r}
+Power2(131, 3)
+```
+
+**D.** Ahora crea una nueva función, Power3(), que devuelve el resultado x^a como un objeto R, en lugar de simplemente imprimirlo en la pantalla. Es decir, si almacena el valor x^a en un objeto llamado resultado dentro de su función, entonces puede simplemente return() este resultado, usando la siguiente línea:
+
+```{r}
+Power3 <- function(x , a) {
+    result <- x^a
+    return(result)
+}
+
+```
+
+La línea de arriba debe ser la última línea de su función, antes del símbolo }.
+
+
+**E.** Ahora, usando la función Power3(), crea un gráfico de f(x) = x2. El eje x debe mostrar un rango de números enteros de 1 a 10, y el eje y debe mostrar x2. Etiquete los ejes apropiadamente, y use un título apropiado para la figura. Considere la posibilidad de mostrar el eje x, el eje y, o ambos en la escala de registro. Puede hacerlo usando log=''x'', log=''y'', o log=''xy'' como argumentos de la función plot().
+
+```{r}
+x <- 1:10
+plot(x, Power3(x, 2), log = "xy", xlab = "Log of x", ylab = "Log of x^2", main = "Log of x^2 vs Log of x")
+```
+
+
+**F.** Crea una función, PlotPower(), que te permite crear una gráfica de x contra x^a para una a fija y para un rango de valores de x. Por ejemplo, si llamas a PlotPower (1:10 ,3)
+entonces se debe crear una gráfica con un eje x que tome los valores 1, 2, . . . ...10, y un eje y que tome los valores 13, 23, ... , 103.
+
+```{r}
+PlotPower <- function(x, a) {
+    plot(x, Power3(x, a))
+}
+
+PlotPower(1:10, 3)
+```
+
+
+#### 13. Utilizando el conjunto de datos de Boston, se ajustan los modelos de clasificación para predecir si un determinado suburbio tiene un índice de delincuencia por encima o por debajo de la mediana. Explorar la regresión logística, los modelos LDA y KNN usando varios subconjuntos de los predictores. Describa sus hallazgos.
+
+```{r message=FALSE, warning=FALSE}
+library(MASS)
+attach(Boston)
+crim01 <- rep(0, length(crim))
+crim01[crim > median(crim)] <- 1
+Boston <- data.frame(Boston, crim01)
+
+train <- 1:(length(crim) / 2)
+test <- (length(crim) / 2 + 1):length(crim)
+Boston.train <- Boston[train, ]
+Boston.test <- Boston[test, ]
+crim01.test <- crim01[test]
+
+fit.glm <- glm(crim01 ~ . - crim01 - crim, data = Boston, family = binomial, subset = train)
+```
+
+```{r}
+probs <- predict(fit.glm, Boston.test, type = "response")
+pred.glm <- rep(0, length(probs))
+pred.glm[probs > 0.5] <- 1
+table(pred.glm, crim01.test)
+```
+
+```{r}
+mean(pred.glm != crim01.test)
+```
+Con esta regresión logística tenemos un error de prueba de 18.1818182%.
+
+```{r message=FALSE, warning=FALSE}
+fit.glm <- glm(crim01 ~ . - crim01 - crim - chas - nox, data = Boston, family = binomial, subset = train)
+```
+```{r}
+probs <- predict(fit.glm, Boston.test, type = "response")
+pred.glm <- rep(0, length(probs))
+pred.glm[probs > 0.5] <- 1
+table(pred.glm, crim01.test)
+```
+
+```{r}
+mean(pred.glm != crim01.test)
+```
+Para esta regresión logística tenemos un error de de prueba de 15.8102767%.
+
+```{r}
+fit.lda <- lda(crim01 ~ . - crim01 - crim, data = Boston, subset = train)
+pred.lda <- predict(fit.lda, Boston.test)
+table(pred.lda$class, crim01.test)
+```
+
+```{r}
+mean(pred.lda$class != crim01.test)
+```
+
+Para este  LDA, tenemos un error de prueba de  13.4387352%.
+
+```{r}
+fit.lda <- lda(crim01 ~ . - crim01 - crim - chas - nox, data = Boston, subset = train)
+pred.lda <- predict(fit.lda, Boston.test)
+table(pred.lda$class, crim01.test)
+```
+
+```{r}
+mean(pred.lda$class != crim01.test)
+```
+
+Para esta LDA tenemos un error de prueba de 15.0197628%.
+
+```{r warning=FALSE}
+library(class)
+train.X <- cbind(zn, indus, chas, nox, rm, age, dis, rad, tax, ptratio, black, lstat, medv)[train, ]
+test.X <- cbind(zn, indus, chas, nox, rm, age, dis, rad, tax, ptratio, black, lstat, medv)[test, ]
+train.crim01 <- crim01[train]
+set.seed(1)
+pred.knn <- knn(train.X, test.X, train.crim01, k = 1)
+table(pred.knn, crim01.test)
+```
+
+```{r}
+mean(pred.knn != crim01.test)
+```
+
+Para este modelo de  KNN (k=1), tenemos un error de prueba de 45.8498024%.
+
+```{r}
+pred.knn <- knn(train.X, test.X, train.crim01, k = 10)
+table(pred.knn, crim01.test)
+```
+
+
+```{r}
+mean(pred.knn != crim01.test)
+```
+
+Para este modelo de KNN (k=10), tenemos un error de prueba de 11.8577075%.
+
+```{r}
+pred.knn <- knn(train.X, test.X, train.crim01, k = 100)
+table(pred.knn, crim01.test)
+```
+
+
+```{r}
+mean(pred.knn != crim01.test)
+```
+
+
+Para este modelo de KNN (k=100), tenemos un error de prueba de 49.0118577%.
