@@ -1,4 +1,4 @@
-# 🎓 Schoolar--Master--Work  
+# 🎓 Scholar_Projects 
 
 This repository contains selected documents, assignments, and projects developed during my graduate studies:  
 
